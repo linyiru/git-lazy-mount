@@ -1,0 +1,617 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" href="/git-lazy-mount/favicon.svg" type="image/svg+xml"/><title>Specification - git-lazy-mount</title><meta name="description" content="Lazily mount a git repo without cloning it. Works with ordinary git commands."/><meta property="og:title" content="Specification"/><meta property="og:description" content="Lazily mount a git repo without cloning it. Works with ordinary git commands."/><meta property="og:type" content="article"/><script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/*.md"}},{"not":{"href_matches":"/*.json"}},{"not":{"href_matches":"/*.txt"}},{"not":{"href_matches":"/*.xml"}},{"not":{"href_matches":"/mcp"}}]},"eagerness":"moderate"}],"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/*.md"}},{"not":{"href_matches":"/*.json"}},{"not":{"href_matches":"/*.txt"}},{"not":{"href_matches":"/*.xml"}},{"not":{"href_matches":"/mcp"}}]},"eagerness":"moderate"}]}</script><script>(function(){if(HTMLScriptElement.supports&&HTMLScriptElement.supports('speculationrules'))return;var seen=new Set();document.addEventListener('pointerover',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(!a)return;var u=new URL(a.href,location.href);if(u.origin!==location.origin||seen.has(u.pathname)||u.pathname===location.pathname)return;if(/.(md|json)$/.test(u.pathname)||u.pathname==='/mcp')return;seen.add(u.pathname);var l=document.createElement('link');l.rel='prefetch';l.href=u.pathname+u.search;document.head.appendChild(l);},{passive:true});})();</script><style>
+          @view-transition { navigation: auto; }
+          ::view-transition-group(root),
+          ::view-transition-old(root),
+          ::view-transition-new(root) { animation-duration: 120ms; }
+          @media (prefers-reduced-motion: reduce) {
+            ::view-transition-group(*),
+            ::view-transition-old(*),
+            ::view-transition-new(*) { animation: none !important; }
+          }
+</style><link rel="stylesheet" href="/git-lazy-mount/_june/global.36543955.css"/></head><body><script>(function(){try{var p=localStorage.getItem('kura-theme')||'system';var d=document.documentElement;d.setAttribute('data-theme-pref',p);d.setAttribute('data-theme',(p==='dark'||(p==='system'&&matchMedia('(prefers-color-scheme:dark)').matches))?'dark':'light');}catch(e){}})();</script><header class="sticky top-0 z-20 flex items-center gap-4 h-14 px-5 bg-topbar-bg backdrop-blur-sm border-b border-border max-md:px-4 max-md:gap-2.5"><a class="flex items-center gap-1.5 font-bold text-[1.05rem]" href="/git-lazy-mount/">git-lazy-mount<!-- --> <span class="font-normal text-muted text-[.85rem]">Docs</span></a><form class="ml-auto max-md:ml-2 max-md:flex-1 max-md:min-w-0" action="/git-lazy-mount/search" method="get"><input class="w-[280px] max-w-[40vw] px-3 py-2 text-[.9rem] border border-border rounded-lg bg-surface-2 text-fg max-md:w-full max-md:max-w-none search-box" placeholder="Search docs…  (press /)" aria-label="Search" data-search-endpoint="/git-lazy-mount/search.json" data-doc-base="/git-lazy-mount/" data-search-static="1" name="q"/></form><nav class="flex items-center gap-4 text-muted text-[.9rem]"></nav></header><nav data-tabbar="true" class="sticky top-14 z-[15] h-11 bg-bg border-b border-border max-md:hidden"><div class="flex items-stretch gap-6 h-full max-w-[1280px] mx-auto px-5 overflow-x-auto no-scrollbar"><a data-tab-key="Using it" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/compatibility">Using it</a><a data-tab-key="How it works" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/architecture">How it works</a><a data-tab-key="Reference" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/design">Reference</a></div></nav><button class="hidden max-md:flex items-center gap-2.5 w-full px-4 py-2.5 bg-bg border-0 border-b border-border text-fg-soft text-[.9rem] text-left cursor-pointer focus-visible:outline-none focus-visible:bg-hover" data-drawer-open="true" aria-controls="docs-nav" aria-expanded="false"><span class="text-[1.05rem] leading-none" aria-hidden="true">☰</span><span class="font-semibold text-fg flex-none">Navigation</span><span class="nav-bar-context text-muted flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" data-nav-context="true"></span></button><div class="drawer-backdrop" data-drawer-close="true" aria-hidden="true"></div><div class="grid grid-cols-[248px_minmax(0,1fr)_220px] max-lg:grid-cols-[248px_minmax(0,1fr)] max-md:grid-cols-1 items-start max-w-[1280px] mx-auto has-tabs"><aside class="sidebar sticky top-[100px] h-[calc(100vh-100px)] overflow-y-auto px-4 py-6 border-r border-border" id="docs-nav"><div data-tabbar="true" class="hidden max-md:flex flex-wrap gap-1.5 mb-4 pb-4 border-b border-border"><a data-tab-key="Using it" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/compatibility">Using it</a><a data-tab-key="How it works" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/architecture">How it works</a><a data-tab-key="Reference" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/design">Reference</a></div><div data-tab="Using it"><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">Using it</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/compatibility">Git compatibility report</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/limitations">Current limitations</a></li></ul></div></div><div data-tab="How it works" hidden=""><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">How it works</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/architecture">Architecture overview</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/worktree-model">Worktree model</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/git-state-model">Git state model</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/fuse-semantics">FUSE semantics</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/object-fetching">Object fetching</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/index-strategy">Index &amp; scalability</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/fsmonitor">FSMonitor v2 protocol + the durable change journal</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/deadlock-startup-recovery">Startup &amp; deadlock avoidance</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/durability-security">Durability &amp; security</a></li></ul></div></div><div data-tab="Reference" hidden=""><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">Reference</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/design">Specification</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/windows">Windows (ProjFS)</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/macos">macOS (FSKit)</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/macos-fskit-ondevice">macOS on-device</a></li></ul></div></div></aside><div data-june-outlet=""><main class="w-auto max-w-none m-0 min-w-0 px-10 pt-8 pb-20 max-md:px-4 max-md:pt-5 max-md:pb-12"><details class="hidden max-lg:block mb-5 border border-border rounded-xl overflow-hidden"><summary class="chevron flex justify-between items-center cursor-pointer px-3.5 py-2.5 text-[.85rem] font-semibold text-fg-soft">On this page</summary><div class="flex flex-col px-3.5 pt-1 pb-2.5 border-t border-border"><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#11-the-git-lazy-mount-verb-surface">1.1 The git lazy-mount verb surface</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#51-two-sources-of-truth">5.1 Two sources of truth</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#52-working-tree-model-baseline--overlay">5.2 Working-tree model: baseline + overlay</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#53-crates">5.3 Crates</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#54-on-disk-layout">5.4 On-disk layout</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#55-command-surface">5.5 Command surface</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#56-startup-sequence">5.6 Startup sequence</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#57-the-tree0-default-and-its-rationale">5.7 The tree:0 default and its rationale</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#61-worktree-model">6.1 Worktree model</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#62-fuse-semantics">6.2 FUSE semantics</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#63-object-fetching">6.3 Object fetching</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#64-fsmonitor-v2--change-journal">6.4 FSMonitor v2 + change journal</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#65-git-state-model">6.5 Git state model</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#66-index-strategy">6.6 Index strategy</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#67-durability-and-security">6.7 Durability and security</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#68-deadlock-startup-and-recovery">6.8 Deadlock, startup, and recovery</a></div></details><div class="flex items-center justify-between gap-4 mb-6"><div class="prose"><h1 class="!m-0"><code>git-lazy-mount</code>: design specification</h1></div><div class="relative inline-flex items-stretch flex-none"><button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[.85rem] border border-border border-r-0 rounded-l-lg bg-surface text-fg-soft cursor-pointer hover:bg-hover hover:text-fg" data-copy-md="/git-lazy-mount/design.md"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copy Markdown</button><details class="relative inline-flex items-stretch" data-menu="true"><summary class="chevron inline-flex items-center justify-center w-[30px] border border-border rounded-r-lg bg-surface text-muted cursor-pointer hover:bg-hover hover:text-fg" aria-label="More actions"></summary><div class="absolute right-0 top-[calc(100%+.4rem)] z-30 min-w-[17rem] flex flex-col gap-px p-1.5 bg-surface border border-border rounded-xl shadow-xl"><button class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" data-copy-md="/git-lazy-mount/design.md"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg><span class="flex flex-col min-w-0"><span class="font-semibold text-[.9rem] text-fg">Copy Markdown</span><span class="text-[.8rem] text-muted">Copy this page as Markdown for LLMs</span></span></button><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="/git-lazy-mount/design.md"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M16 21H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l4 4v12a2 2 0 0 1-2 2z"></path><path d="M9 13h6M9 17h4"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">View as Markdown<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">View this page as plain text</span></span></a><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="https://chatgpt.com/?q=Please%20read%20this%20doc%20and%20answer%20my%20questions%3A%20Specification" target="_blank" rel="noreferrer"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">Open in ChatGPT<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">Ask ChatGPT about this page</span></span></a><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="https://claude.ai/new?q=Please%20read%20this%20doc%20and%20answer%20my%20questions%3A%20Specification" target="_blank" rel="noreferrer"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">Open in Claude<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">Ask Claude about this page</span></span></a></div></details></div></div><article class="prose"><p><code>git-lazy-mount</code> is a <strong>Linux-only</strong> FUSE filesystem that lazily mounts a Git
+repository without a full clone. One command —</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-bash"><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> https://github.com/example/huge-repo</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> ~/huge-repo</span></span></code></pre>
+<p>— partial-clones the repo, mounts a transparent virtual working tree, validates
+it, and returns. Afterward <strong>stock Git, editors, and builds work directly</strong>, with
+no wrapper, alias, environment activation, or <code>git lazy-mount</code> workflow verb.
+Files materialize (hydrate) on read or edit.</p>
+<p>This is the authoritative specification. It is written to match the shipped code;
+where it summarizes a subsystem, the linked area document under <a href="."><code>docs/</code></a> owns
+the implementation detail. macOS (FSKit) and Windows (ProjFS) backends are out of
+scope; notes on them live under <a href="future-platforms/"><code>future-platforms/</code></a>.</p>
+<p>The design is deliberately clean: there is no custom stage, no custom
+branch/commit state, no commit-adoption bridge, and no headless-first
+architecture. The real <code>.git/index</code> is the only stage; stock Git owns refs, HEAD,
+commits, merges, and conflict stages.</p>
+<p>The executable is named <code>git-lazy-mount</code>, so Git exposes it as <code>git lazy-mount</code>.</p>
+<hr />
+<h1>1. Product contract</h1>
+<p>The primary command replaces the initial <code>git clone</code> for one working copy:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-bash"><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> https://github.com/example/huge-repo</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> ~/huge-repo</span></span></code></pre>
+<p>It must not return successfully until:</p>
+<ol>
+<li>the partial Git repository exists;</li>
+<li>the virtual filesystem is mounted;</li>
+<li>the projected root is readable;</li>
+<li>the synthetic <code>.git</code> entry resolves correctly;</li>
+<li>stock Git recognizes the repository;</li>
+<li>the FSMonitor integration is live;</li>
+<li>a basic Git health check succeeds.</li>
+</ol>
+<p>After the command returns, the following must use the user's ordinary Git
+executable with no wrapper, shell alias, environment activation, or workflow verb:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-bash"><span class="line"><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF">cd</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> ~/huge-repo</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">ls</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> README.md</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; $EDITOR </span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">src/main.rs</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> status</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> diff</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> add</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> -p</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> commit</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> -m</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> "…"</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> commit</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> --amend</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> log</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> branch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> switch</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> feature</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> checkout</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> other</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> merge</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> topic</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> rebase</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> main</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> stash</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> fetch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> pull</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> push</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">cargo</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> build</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">make</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">rg</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> 'pattern'</span></span></code></pre>
+<p>Running an unrelated command such as <code>git clone …</code> from inside the mount must
+behave like ordinary Git.</p>
+<h2 id="11-the-git-lazy-mount-verb-surface">1.1 The <code>git lazy-mount</code> verb surface</h2>
+<p><code>git lazy-mount</code> itself stays out of the daily workflow. The shipped subcommands
+are limited to lifecycle and diagnostics:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-bash"><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">ur</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">l</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">        # mount (primary form)</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> unmount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">      # release the kernel mount</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> doctor</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">       # report mountpoint / mounted / show-toplevel (--json)</span></span></code></pre>
+<p>There is also one hidden, internal subcommand, <code>__serve</code>, spawned by the mount
+flow to hold the kernel mount after the parent command returns (see
+<a href="#55-command-surface">§5.5</a>). It is not a user-facing command.</p>
+<p>Providing alternative workflow commands such as <code>git lazy-mount add | commit | branch | switch | push | git --</code> would mean transparency had failed; they do not
+exist.</p>
+<hr />
+<h1>2. Definition of &quot;stock Git works&quot;</h1>
+<p>The compatibility target is an unmodified, upstream Git executable discovered from
+the user's <code>PATH</code>.</p>
+<p>Allowed integration points:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>a standard .git gitfile</span></span>
+<span class="line"><span>normal Git configuration, hooks, refs, and reflogs</span></span>
+<span class="line"><span>core.fsmonitor</span></span>
+<span class="line"><span>the real Git index</span></span>
+<span class="line"><span>normal partial-clone configuration</span></span>
+<span class="line"><span>normal alternates</span></span></code></pre>
+<p>Not allowed as the product design:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>shadowing or replacing the git executable</span></span>
+<span class="line"><span>shell aliases for built-in Git commands</span></span>
+<span class="line"><span>a required command wrapper</span></span>
+<span class="line"><span>LD_PRELOAD interception</span></span>
+<span class="line"><span>process-specific filesystem lies</span></span>
+<span class="line"><span>a disposable Git repository per command</span></span>
+<span class="line"><span>importing or "adopting" commits after Git exits</span></span>
+<span class="line"><span>a second staging database</span></span>
+<span class="line"><span>a second authoritative branch database</span></span>
+<span class="line"><span>a second implementation of Git commit semantics</span></span></code></pre>
+<p>The filesystem exposes the same namespace and contents to Git, editors, builds,
+and ordinary applications. Results never depend on the caller's process name.</p>
+<hr />
+<h1>3. Two separate success dimensions</h1>
+<p>Every Git command is classified along two independent axes.</p>
+<p><strong>Compatibility:</strong> <code>correct</code> / <code>partially correct</code> / <code>unsupported</code>. Correct means
+exit status, stdout/stderr, HEAD, refs, reflogs, index, pseudorefs, working-tree
+contents, conflicts, hooks, and resulting commits match a normal checkout.</p>
+<p><strong>Laziness and performance:</strong> <code>fully lazy</code> / <code>bounded hydration</code> / <code>potentially eager</code>. A command is not &quot;fully supported at scale&quot; merely because it produces the
+right result after fetching every changed blob. For example, unmodified Git may
+materialize every path changed by a branch switch — measure that behavior rather
+than hiding it. The per-command matrix lives in
+<a href="/git-lazy-mount/compatibility"><code>compatibility.md</code></a>.</p>
+<hr />
+<h1>4. Lessons as invariants</h1>
+<p>Each item below is enforced by the architecture and covered by tests. They are the
+core design invariants the implementation upholds.</p>
+<p><strong>Do not report a mount before mounting.</strong> The mount is reported ready only after
+the kernel mount is live and Git health checks pass. Readiness is observed by
+polling for the synthetic <code>.git</code> to appear, then running <code>git rev-parse --show-toplevel</code> / <code>--is-inside-work-tree</code>. Mount identity is a monotonic
+<code>MountGeneration</code> counter (<code>crates/core/src/ids.rs</code>) used to detect stale kernel
+and view entries; there is no named mount state machine and no mount registry.</p>
+<p><strong>Do not maintain two stages.</strong> The single stage is the real <code>$GIT_DIR/index</code>.
+<code>git add</code>, <code>git add -p</code>, <code>git reset</code>, <code>git restore --staged</code>, merges, and conflict
+stages operate on that index directly through stock Git.</p>
+<p><strong>Do not maintain two ref models.</strong> Git owns HEAD, <code>refs/heads/*</code>,
+<code>refs/remotes/*</code>, <code>refs/tags/*</code>, <code>ORIG_HEAD</code>/<code>FETCH_HEAD</code>/<code>MERGE_HEAD</code>/…,
+sequencer and rebase state, and reflogs. Plain <code>git commit</code>, <code>git amend</code>, <code>git rebase</code>, and <code>git push</code> update normal Git state directly.</p>
+<p><strong>Do not use skip-worktree as a universal trick.</strong> The correctness baseline works
+without marking every index entry skip-worktree. The mount builds a full real
+index from HEAD (<code>git read-tree HEAD</code>) and relies on FSMonitor, not on
+sparse/skip-worktree semantics, to keep <code>git status</code> cheap. (The interop bridge in
+<code>crates/git-store/src/interop.rs</code> <em>does</em> mark every entry skip-worktree, but that
+is a throwaway operational index for running stock Git against the shared store —
+not the mount hot path.)</p>
+<p><strong>Directory listing must not hydrate file contents.</strong> <code>readdir</code> returns names,
+inode IDs, and <code>d_type</code> only — never exact sizes or blob reads. It merges baseline
+tree and overlay children at O(direct children). <code>readdirplus</code> is not enabled.</p>
+<p><strong>Do not buffer entire files per callback.</strong> All content paths are
+file-descriptor / streaming based. Reads are serviced by <code>pread</code> into a cache
+file; writes by <code>pwrite</code> into an overlay FD. Memory use is not proportional to
+blob size (reading a 64 MiB blob grows RSS by roughly one request-sized buffer,
+far below the blob size; the test pins it under 24 MiB for a 64 MiB blob).</p>
+<p><strong>Real file handles; never <code>fh = 0</code>.</strong> Each successful open allocates a unique
+handle (<code>next_fh</code> is an <code>AtomicU64</code> starting at 1). Reads and writes are serviced
+strictly by handle, so open-unlink and rename-while-open work without a path.</p>
+<p><strong>Bounded pools, not thread-per-callback.</strong> FUSE callbacks run on two fixed-size
+worker pools (16 object-I/O threads + 4 metadata threads), never one OS thread per
+request.</p>
+<p><strong>Empty directories are real workspace state.</strong> An untracked empty directory is a
+durable overlay <code>Dir</code> entry, not just an inode-table row; it survives lookup,
+<code>readdir</code>, unmount, and remount. Git omits empty directories from commits.</p>
+<p><strong>The change journal must be durable.</strong> A process-local <code>Mutex&lt;Vec&lt;…&gt;&gt;</code> is not a
+sufficient FSMonitor backing store. Changes are appended to a durable on-disk log
+that is replayed on open, and any discontinuity yields a full-invalidation
+response.</p>
+<p><strong>Baseline + overlay model the working tree.</strong> The virtual working tree is a
+read-only baseline tree plus a writable overlay (see <a href="#52-working-tree-model-baseline--overlay">§5.2</a>).</p>
+<p><strong>Linux only; no premature platform scaffolding.</strong> A crate that merely compiles
+on another OS is not platform support. The shipped system is Linux / FUSE only.</p>
+<hr />
+<h1>5. Architecture</h1>
+<h2 id="51-two-sources-of-truth">5.1 Two sources of truth</h2>
+<table>
+<thead>
+<tr>
+<th>Owner</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Git</strong> (the native admin gitdir)</td>
+<td>HEAD, branches, refs, reflogs, remote-tracking refs, <strong>the real <code>.git/index</code></strong> (the only stage), conflict stages 1/2/3, commit/amend, merge/rebase/cherry-pick/stash/bisect/sequencer state, tags, push/fetch config</td>
+</tr>
+<tr>
+<td><strong>The projection</strong> (custom state)</td>
+<td>only the <strong>virtual working-tree bytes</strong>: baseline + overlay + tombstones + the synthetic <code>.git</code>; the FUSE projection; the durable change journal; the content cache; inode/handle tables</td>
+</tr>
+</tbody>
+</table>
+<p>The projection's parsed views of Git state are disposable caches, rebuilt from the
+real gitdir. We never mirror Git state into a second authoritative model, never
+import commits after Git exits, and never keep a second stage or branch database.
+See <a href="/git-lazy-mount/git-state-model"><code>git-state-model.md</code></a>.</p>
+<h2 id="52-working-tree-model-baseline--overlay">5.2 Working-tree model: baseline + overlay</h2>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>working tree(path) =</span></span>
+<span class="line"><span>  1. synthetic entry (root .git gitfile)   reserved, protected</span></span>
+<span class="line"><span>  2. overlay file / dir / symlink          local writes</span></span>
+<span class="line"><span>  3. overlay tombstone                      deletions (incl. tombstoned ancestor)</span></span>
+<span class="line"><span>  4. overlay clean-rename base-ref          rename/subtree mapping</span></span>
+<span class="line"><span>  5. baseline Git tree entry (HEAD tree)    lazy, unmaterialized</span></span>
+<span class="line"><span>  6. absent</span></span></code></pre>
+<p>Initial state: <code>baseline = checked-out commit tree</code>, <code>overlay = empty</code>. The
+baseline answers &quot;what would this unmaterialized path contain in the logical
+working tree&quot; — not what is staged, what HEAD is, or what branch is checked out;
+those come from Git. This is why a baseline is necessary: index-only operations
+(<code>git reset --mixed</code>, <code>git restore --staged</code>, <code>git rm --cached</code>) change the index
+without changing working-tree bytes, and the baseline/overlay split preserves the
+working tree while the real index moves independently.</p>
+<p>The baseline tree is <strong>fixed at projection open</strong> from the HEAD tree and is
+immutable for that projection's life; there is no baseline-advancement machinery.
+Branch-changing commands stay correct because stock Git writes every changed path
+through the FUSE write path into the overlay (see
+<a href="/git-lazy-mount/worktree-model">worktree-model.md</a> and the eagerness note in
+<a href="#7-required-plain-git-compatibility-surface">§7</a>).</p>
+<h2 id="53-crates">5.3 Crates</h2>
+<p>The workspace is exactly nine crates (Cargo package names in parentheses):</p>
+<table>
+<thead>
+<tr>
+<th>Crate</th>
+<th>Package</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core</code></td>
+<td><code>glm-core</code></td>
+<td>Backend-agnostic vocabulary: <code>ObjectId</code> (format-tagged raw bytes, never assumed SHA-1), <code>GitMode</code>, <code>RepoPath</code> (raw non-NUL bytes), <code>TreeObject</code>, <code>MountGeneration</code>, the per-path state axes <code>Source</code>/<code>SemanticStatus</code>/<code>Residency</code>/<code>Durability</code>, <code>FetchPolicy</code>, and <code>Error</code>/<code>ErrorCode</code> with stable string codes + Linux errno mapping.</td>
+</tr>
+<tr>
+<td><code>git-store</code></td>
+<td><code>glm-git-store</code></td>
+<td>Git-CLI object access: long-lived <code>cat-file --batch-command</code> sessions, <code>object_size</code>, <code>smudge_blob</code>, fd hardening (<code>CLOEXEC</code>, <code>GIT_NO_LAZY_FETCH</code>, <code>GIT_OPTIONAL_LOCKS</code>), byte-exact tree parsing, and the <code>interop.rs</code> operational-index bridge.</td>
+</tr>
+<tr>
+<td><code>git-repo</code></td>
+<td><code>glm-git-repo</code></td>
+<td><code>AdminRepo</code>: the transparent clone, <code>build_index</code> (<code>git read-tree HEAD</code>), and the FSMonitor seed.</td>
+</tr>
+<tr>
+<td><code>worktree</code></td>
+<td><code>glm-worktree</code></td>
+<td>The <code>Projection</code> (baseline + overlay + content cache + single-flight), the <code>Overlay</code> (JSON sidecars), and the <code>ChangeJournal</code>.</td>
+</tr>
+<tr>
+<td><code>fs-common</code></td>
+<td><code>glm-fs-common</code></td>
+<td><code>InodeTable</code>: stable inode identity with generations; <code>ROOT_INO = 1</code> is the only pre-allocated inode.</td>
+</tr>
+<tr>
+<td><code>fuse</code></td>
+<td><code>glm-fuse</code></td>
+<td><code>TransparentFs</code>: the <code>fuser::Filesystem</code> implementation, real handle table, and the two bounded worker pools.</td>
+</tr>
+<tr>
+<td><code>cli</code></td>
+<td><code>glm-cli</code></td>
+<td>The <code>git-lazy-mount</code> binary and the <code>git-lazy-mount-fsmonitor</code> hook binary.</td>
+</tr>
+<tr>
+<td><code>sgrep</code></td>
+<td><code>glm-sgrep</code></td>
+<td>A separate standalone remote-grep CLI that reads the overlay/journal directly so search fetches nothing. Not part of the mount.</td>
+</tr>
+<tr>
+<td><code>testkit</code></td>
+<td><code>glm-testkit</code></td>
+<td>Shared test helpers.</td>
+</tr>
+</tbody>
+</table>
+<p>There is no <code>daemon</code>, <code>ipc</code>, <code>namespace</code>, <code>overlay</code>, <code>object-provider</code>,
+<code>filtered-cache</code>, <code>fsmonitor</code>, or <code>platform</code> crate.</p>
+<h2 id="54-on-disk-layout">5.4 On-disk layout</h2>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>$XDG_DATA_HOME/git-lazy-mount/        (else ~/.local/share/git-lazy-mount/)</span></span>
+<span class="line"><span>  workspaces/&#x3C;16-hex-hash-of-mountpoint>/</span></span>
+<span class="line"><span>    git/        real native partial-clone admin gitdir   (NOT inside FUSE)</span></span>
+<span class="line"><span>      glm-fsmonitor/changes.log        durable NUL-separated change journal</span></span>
+<span class="line"><span>    cache/      content-addressed cache files (materialized working-tree bytes)</span></span>
+<span class="line"><span>    overlay/</span></span>
+<span class="line"><span>      meta/     one atomic JSON sidecar per overlay entry  (sha256(path).json)</span></span>
+<span class="line"><span>      content/  native files holding writable content bytes</span></span>
+<span class="line"><span>    anchor/     temporary clone anchor, discarded after init</span></span></code></pre>
+<p>The mounted worktree (<code>~/huge-repo/</code>) projects one synthetic read-only regular
+file <code>.git</code> whose bytes are <code>gitdir: /abs/.../workspaces/&lt;id&gt;/git</code>. The admin
+gitdir is configured with <code>core.worktree = &lt;mountpoint&gt;</code>, so stock Git resolves
+the repo through the gitfile and operates on the mounted worktree using its normal
+index, refs, locks, and hooks. The admin gitdir lives on a native filesystem,
+never inside FUSE, so Git's <code>index.lock</code>, <code>packed-refs</code>, ref/config locks,
+reflogs, sequencer/merge/rebase state, and atomic renames all work normally.</p>
+<p>The synthetic <code>.git</code> is protected: any create/replace/delete/rename/chmod/write of
+it, or any attempt to create a path beneath it, fails safely. Protection is
+enforced in <code>Projection::child_path</code> (returns <code>ErrorCode::Authentication</code>), not by
+a reserved inode. A repo tree entry literally named <code>.git</code> never shadows the
+synthetic one.</p>
+<p>Storage durability (atomic sidecars + fsync, content retention via Linux fd
+survival) is owned by <a href="/git-lazy-mount/durability-security"><code>durability-security.md</code></a>; the
+overlay/baseline/tombstone model is owned by
+<a href="/git-lazy-mount/worktree-model"><code>worktree-model.md</code></a>.</p>
+<h2 id="55-command-surface">5.5 Command surface</h2>
+<p>The mount flow does <strong>not</strong> run a per-user daemon and uses no IPC socket. Instead
+the parent command spawns a single <strong>detached, hidden <code>__serve</code> child</strong> that holds
+the kernel mount:</p>
+<ul>
+<li><code>cmd_mount</code> does the clone/index/seed work, then spawns <code>git-lazy-mount __serve --gitdir … --mountpoint … --cache … --overlay …</code> with stdio nulled. The child is
+reparented to init and is <strong>not</strong> waited on; the parent polls for the synthetic
+<code>.git</code>, runs health checks, prints success, and exits.</li>
+<li><code>cmd_serve</code> (the <code>__serve</code> body) opens the <code>AdminRepo</code>, opens the
+<code>ChangeJournal</code>, builds the <code>Projection</code> with that journal, and calls
+<code>glm_fuse::mount</code>, which blocks until the mount is released.</li>
+<li><code>cmd_unmount</code> runs <code>fusermount3 -u</code> (falling back to <code>fusermount -u</code>, then
+<code>umount</code>); the serving child's <code>mount()</code> returns and it exits.</li>
+<li><code>cmd_doctor</code> reports mountpoint, mounted-or-not, and <code>show-toplevel</code>
+(optionally as JSON).</li>
+</ul>
+<p>The FSMonitor hook (<code>git-lazy-mount-fsmonitor</code>) and <code>sgrep</code> read the durable
+journal file directly — there is no socket and no protocol version to negotiate.</p>
+<h2 id="56-startup-sequence">5.6 Startup sequence</h2>
+<p><code>cmd_mount</code> runs as a straight-line sequence:</p>
+<ol>
+<li><strong>Preflight.</strong> Create the mountpoint if needed and require it to be empty;
+derive the deterministic per-mountpoint workspace paths.</li>
+<li><strong>Clone.</strong> <code>AdminRepo::clone</code> runs <code>git clone --no-checkout --separate-git-dir=&lt;gitdir&gt;</code> with the default <code>--filter=tree:0</code>, sets
+<code>core.worktree=&lt;mountpoint&gt;</code>, adds <code>--no-single-branch</code> when <code>--depth</code> is set,
+and runs with <code>GIT_TERMINAL_PROMPT=0</code>. A full-object clone (filter rejected
+with <code>--allow-full-object-clone</code>) still implies <strong>no</strong> checkout.</li>
+<li><strong>Build the index.</strong> <code>build_index</code> runs <code>git read-tree HEAD</code>, faulting the HEAD
+tree hierarchy and fetching <strong>zero</strong> blobs. This is O(tracked paths) of
+metadata work and is reported honestly, never marketed as O(1).</li>
+<li><strong>Configure FSMonitor.</strong> Set <code>core.fsmonitor</code> to the
+<code>git-lazy-mount-fsmonitor</code> binary beside the executable, and
+<code>core.fsmonitorHookVersion=2</code>. (Nothing else is configured — no
+<code>untrackedCache</code>, no <code>hooksPath</code>, no <code>index.version</code>.)</li>
+<li><strong>Seed first status.</strong> Open the (empty) change journal, then
+<code>seed_fsmonitor_valid</code> so the <em>first</em> <code>git status</code> faults zero blobs (see
+<a href="#64-fsmonitor-v2--change-journal">§6.4</a>).</li>
+<li><strong>Serve.</strong> Spawn the detached <code>__serve</code> child.</li>
+<li><strong>Validate.</strong> Poll <code>mountpoint/.git</code> for readiness (up to 1000 × 10 ms), then
+run the health checks and print success.</li>
+</ol>
+<p>The startup ordering and its deadlock-avoidance constraints are owned by
+<a href="/git-lazy-mount/deadlock-startup-recovery"><code>deadlock-startup-recovery.md</code></a>.</p>
+<h2 id="57-the-tree0-default-and-its-rationale">5.7 The <code>tree:0</code> default and its rationale</h2>
+<p>The default partial-clone filter is <strong><code>tree:0</code></strong>: every commit is fetched (so
+history, merge-base, <code>git log</code>, and branch switching all work), but no trees or
+blobs are. <code>build_index</code> then faults only the HEAD tree hierarchy; blobs hydrate
+on read. This is both correct and cheap.</p>
+<p>Two alternatives are deliberately not the default:</p>
+<ul>
+<li><strong><code>--depth 1</code> (shallow)</strong> grafts the commits, which breaks <code>git merge</code> / <code>git rebase</code> and hides history. Not a default.</li>
+<li><strong><code>blob:none</code></strong> with full history would download <strong>every tree from all of
+history</strong> — slow and large on big repos. Not a default.</li>
+</ul>
+<p><code>blob:none</code> and <code>--depth</code> remain valid <strong>explicit</strong> overrides:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-bash"><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">ur</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">l</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> --branch</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> main</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">ur</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">l</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> --depth</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> 1</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">ur</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">l</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> --filter</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> blob:none</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">git</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF"> lazy-mount</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">ur</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">l</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> &#x3C;</span><span style="--shiki-light:#032F62;--shiki-dark:#A5D6FF">pat</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">h</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">></span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF"> --allow-full-object-clone</span></span></code></pre>
+<hr />
+<h1>6. Subsystems</h1>
+<p>Each subsystem is summarized here at spec altitude; its area document owns the
+depth.</p>
+<h2 id="61-worktree-model">6.1 Worktree model</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/worktree-model"><code>worktree-model.md</code></a>.</em></p>
+<p>The <code>Projection</code> layers the durable overlay over the fixed baseline HEAD tree.
+<code>resolve()</code> follows the order in <a href="#52-working-tree-model-baseline--overlay">§5.2</a>.
+<code>readdir()</code> merges baseline and overlay children at O(direct children) with no
+blob fetch. Overlay entries are <code>File</code> / <code>Symlink</code> / <code>Dir</code> / <code>Tombstone</code> /
+<code>BaseRef{oid,mode}</code>; a clean file or subtree rename is metadata-only (overlay
+re-key plus baseline base-refs at the destination, source tombstoned) and fetches
+no blob contents. <code>RENAME_NOREPLACE</code> is honored; <code>RENAME_EXCHANGE</code> is rejected.
+Repository paths are raw <code>RepoPath</code> byte sequences (never lossily converted to
+UTF-8), so paths with invalid UTF-8, newlines, leading dashes, quotes, and control
+characters round-trip correctly.</p>
+<h2 id="62-fuse-semantics">6.2 FUSE semantics</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/fuse-semantics"><code>fuse-semantics.md</code></a>.</em></p>
+<p><code>TransparentFs</code> implements these <code>fuser</code> operations: <code>init</code> (which negotiates
+<code>FUSE_ATOMIC_O_TRUNC</code>), <code>lookup</code>, <code>forget</code>, <code>getattr</code>, <code>setattr</code>, <code>readlink</code>,
+<code>open</code>, <code>create</code>, <code>read</code>, <code>write</code>, <code>flush</code>, <code>fsync</code>, <code>release</code>, <code>mkdir</code>, <code>unlink</code>,
+<code>rmdir</code>, <code>rename</code>, <code>symlink</code>, <code>opendir</code>, <code>readdir</code>, <code>releasedir</code>, <code>access</code>, and
+<code>statfs</code>. Not implemented (these fall through to the <code>fuser</code> default, <code>ENOSYS</code>):
+<code>link</code>, <code>mknod</code>, all xattr ops, <code>fallocate</code>, <code>copy_file_range</code>, <code>lseek</code>, file
+locking (<code>getlk</code>/<code>setlk</code>/<code>flock</code>), <code>destroy</code>, and <code>batch_forget</code>.</p>
+<p>Handles are real (<code>Handle::Read</code> / <code>Handle::Write</code>, <code>fh</code> from 1, never 0); reads
+and writes are serviced strictly by <code>fh</code> via <code>pread</code>/<code>pwrite</code> into an FD, with no
+whole-file <code>Vec&lt;u8&gt;</code> buffering. First writable <code>O_TRUNC</code> seeds an empty overlay
+file with no baseline fetch; a partial overwrite copies up once and then writes in
+place. Open-unlink and rename-while-open keep working through the FD because
+service does not depend on a path. Inode identity (<code>InodeTable</code>) is stable across
+repeated lookups, with a per-inode generation; <code>ROOT_INO = 1</code> is the only
+pre-allocated inode. Two fixed bounded pools run callbacks: 16 object-I/O threads
+and 4 metadata threads (so <code>ls</code> stays responsive while reads hydrate). There are
+no separate decompress/filter/network pools and no backpressure/cancellation
+machinery.</p>
+<h2 id="63-object-fetching">6.3 Object fetching</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/object-fetching"><code>object-fetching.md</code></a>.</em></p>
+<p><code>materialize_path</code> streams a baseline blob through <code>cat-file</code> into a
+content-addressed cache file and serves range reads from its FD via a
+<code>ContentHandle</code> (<code>pread</code>, bounded RSS). Concurrent faults of the same object are
+coalesced by a per-<code>ObjectId</code> single-flight map (<code>inflight: Mutex&lt;HashMap&lt;ObjectId, Arc&lt;Mutex&lt;()&gt;&gt;&gt;&gt;</code>), so a hundred concurrent reads of one
+missing blob cause one retrieval. Smudge/working-tree content is produced by <code>git cat-file --filters --path --attr-source</code>. Fetch eligibility is gated by
+<code>FetchPolicy</code> (<code>CacheOnly</code> / <code>MustNotFetch</code> / <code>AllowNetwork</code> / <code>Prefetch</code>); a
+missing object under an offline policy maps to a bounded filesystem error
+(<code>OfflineMissingObject → EIO</code>, <code>NotFound → ENOENT</code>).</p>
+<p><code>getattr</code> is the one metadata op that may fault: a Git tree entry carries no exact
+working-tree size, so <code>ls -l</code> / <code>stat</code> of an unmaterialized file faults its blob
+once. This is fundamental to lazy-blob fetching and is separate from <code>git status</code>,
+which faults zero blobs (next section).</p>
+<h2 id="64-fsmonitor-v2--change-journal">6.4 FSMonitor v2 + change journal</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/fsmonitor"><code>fsmonitor.md</code></a>.</em></p>
+<p>Git's FSMonitor v2 hook receives <code>(version, previous_token)</code> and returns a new
+token, a NUL, then the relative paths changed since that token. Responses are
+<strong>inclusive</strong>: false positives are acceptable, false negatives are not. The token
+wire form is <code>glm1:workspace:epoch:seq:generation</code>; <code>epoch</code> and <code>generation</code> are
+fixed at 1 and 0.</p>
+<p>The <code>ChangeJournal</code> (<code>&lt;gitdir&gt;/glm-fsmonitor/changes.log</code>) is a durable
+NUL-separated append log replayed into memory on open. <code>record()</code> writes and
+<code>sync_data()</code>s <strong>before</strong> the FUSE reply, so an acknowledged mutation is always
+visible to the next query. <code>query()</code> returns a full invalidation (<code>/</code>) for any
+token it cannot place: an empty token while <code>seq &gt; 0</code>, an unparseable token, a
+workspace/epoch/generation mismatch, or a <code>seq</code> beyond the current sequence.</p>
+<p><strong>The zero-blob first-status finding (canonical here).</strong> The <em>first</em> clean <code>git status</code> faults zero blobs, the same as every later one. A freshly <code>read-tree</code>'d
+index carries no FSMonitor extension, so without intervention Git stats (and so
+faults) every entry on the first status before writing the extension. The fix,
+applied at mount right after <code>read-tree</code>, pre-seeds the FSMonitor index extension
+(<code>seed_fsmonitor_valid</code>): every entry is marked <code>CE_FSMONITOR_VALID</code> carrying the
+journal's seq-0 token, so Git's <code>refresh_cache_ent</code> early-returns before any
+<code>lstat</code> and the hook answers &quot;nothing changed&quot; at the seq-0 token. Two carve-outs
+keep it correct: (a) checkout conversion attributes
+(<code>filter</code>/<code>ident</code>/<code>working-tree-encoding</code>/CRLF <code>eol</code>) are detected by reading the
+tracked <code>.gitattributes</code> blobs directly; if any path declares such an attribute
+the entire seed is skipped, so Git's first status checks every path normally and
+never hides a diff — bounded by a 20-second attribute-read timeout; (b) the seeded token
+must match the hook's identity, else Git falls back safely to the eager scan.
+Verified zero-fault on an 81k-file real mount.</p>
+<h2 id="65-git-state-model">6.5 Git state model</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/git-state-model"><code>git-state-model.md</code></a>.</em></p>
+<p>The transparent design — <code>git clone --separate-git-dir</code> + <code>core.worktree</code> + a
+synthetic <code>.git</code> gitfile served by the projection — gives stock Git an ordinary
+repository whose working tree happens to be virtual. Git owns all repository state
+(<a href="#51-two-sources-of-truth">§5.1</a>); the projection owns only working-tree bytes.
+Index-only updates leave baseline and overlay untouched; working-tree updates
+flow through FUSE into the overlay exactly as ordinary filesystem operations
+would. We never infer a working-tree update from a changed index.</p>
+<h2 id="66-index-strategy">6.6 Index strategy</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/index-strategy"><code>index-strategy.md</code></a>.</em></p>
+<p>The mount uses a <strong>full real index</strong> built by <code>git read-tree HEAD</code> (faulting HEAD
+trees, fetching zero blobs) — the maximum-compatibility correctness baseline.
+<code>git-store</code>'s <code>interop.rs</code> synthesizes a <em>separate</em> throwaway operational index
+(every entry skip-worktree) only to let stock Git run against the shared store off
+the mount hot path; it is exercised by the store integration tests, not the FUSE
+path. Scalability of larger-repo index strategies (sparse / dynamic skip-worktree
+/ a minimal provider extension) is discussed there; the shipped choice is the
+full index.</p>
+<h2 id="67-durability-and-security">6.7 Durability and security</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/durability-security"><code>durability-security.md</code></a>.</em></p>
+<p>Overlay durability is per-entry: one atomic JSON sidecar per entry
+(<code>id_for(path) = sha256(path)+&quot;.json&quot;</code>) under <code>meta/</code>, content bytes in native
+files under <code>content/</code>, each published temp-file → <code>fsync</code> → <code>rename</code> with a
+parent-directory fsync so an acknowledged create/rename survives a crash. There is
+no SQLite, no namespace database, and no content-id nonce; the in-memory overlay
+index is a disposable cache rebuilt from the sidecars on open. Authentication uses
+the user's normal credential helper during the initial mount only; FUSE callbacks
+are non-interactive (<code>GIT_TERMINAL_PROMPT=0</code>) and gate fetches through
+<code>FetchPolicy</code>. The threat model treats repository data as untrusted (path
+traversal, symlink races, decompression bombs, credential redaction); raw paths
+are escaped safely for display and JSON.</p>
+<h2 id="68-deadlock-startup-and-recovery">6.8 Deadlock, startup, and recovery</h2>
+<p><em>Area doc: <a href="/git-lazy-mount/deadlock-startup-recovery"><code>deadlock-startup-recovery.md</code></a>.</em></p>
+<p>Git processes run <em>inside</em> the mount and can trigger FUSE callbacks; callbacks need
+Git objects. The invariants that prevent deadlock:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>FUSE callbacks never invoke Git porcelain or a worktree-scanning command</span></span>
+<span class="line"><span>FUSE callbacks never wait on the index lock held by the requesting Git process</span></span>
+<span class="line"><span>object readers target the native gitdir directly (long-lived cat-file --batch-command)</span></span>
+<span class="line"><span>GIT_NO_LAZY_FETCH=1 on inspection subprocesses that must not recursively fetch</span></span>
+<span class="line"><span>all mount/session file descriptors are CLOEXEC and not inherited by children</span></span></code></pre>
+<p>Bounded worker pools keep the <code>fuser</code> dispatch loop free to answer a <code>FLUSH</code>
+during a fork/exec.</p>
+<hr />
+<h1>7. Required plain-Git compatibility surface</h1>
+<p>Do not claim transparent Git compatibility until these commands pass mounted
+end-to-end tests through a real <code>/dev/fuse</code> mount without a wrapper. The full
+per-command correctness-and-laziness matrix is in
+<a href="/git-lazy-mount/compatibility"><code>compatibility.md</code></a>.</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>discovery/inspection : rev-parse --show-toplevel, status [--porcelain=v2],</span></span>
+<span class="line"><span>                       diff [--cached], log, show, ls-files, cat-file,</span></span>
+<span class="line"><span>                       branch, tag, remote -v</span></span>
+<span class="line"><span>staging/commit       : add [path|-A|-u|-p], reset path, restore --staged,</span></span>
+<span class="line"><span>                       commit [-a|--amend|--fixup|-S], rm [--cached], mv</span></span>
+<span class="line"><span>branch/worktree       : branch, switch [-c], checkout [-- path], restore,</span></span>
+<span class="line"><span>                       reset [--soft|--mixed|--hard]</span></span>
+<span class="line"><span>history              : merge [--abort], rebase [--continue|--abort],</span></span>
+<span class="line"><span>                       cherry-pick [--continue|--abort], revert, stash [pop]</span></span>
+<span class="line"><span>remote               : fetch [--prune], pull [--rebase], push</span></span>
+<span class="line"><span>                       [--force-with-lease|--tags]</span></span>
+<span class="line"><span>working-tree utils   : clean [-n|-fd], grep, blame, bisect, mergetool, difftool</span></span>
+<span class="line"><span>maintenance          : fsck, gc, maintenance run, repack, prune</span></span></code></pre>
+<p>Plain <code>git push</code> is required; there is no bespoke push command and no second lease
+model. Git's refs, remote-tracking refs, reflogs, and push safety are
+authoritative.</p>
+<p><strong>Eagerness is measured, not hidden.</strong> Branch-changing commands
+(<code>switch</code>/<code>checkout</code>/<code>reset --hard</code>/<code>merge</code>/<code>rebase</code>) are correct but potentially
+eager: stock Git writes every changed path through the FUSE write path. Measured,
+a branch switch over an M-of-N delta touches O(M) blobs (the delta), not O(N) (the
+repo). A release may ship stock-Git-compatible while labeling branch transitions
+&quot;potentially eager&quot;; it must not claim lazy branch switching until demonstrated.</p>
+<hr />
+<h1>8. Hydration budgets</h1>
+<p>These are automated assertions, not aspirations.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Mount</strong> (<code>tree:0</code>)</td>
+<td>fetch zero working-file blobs merely to project the tree; the full-index build does O(tracked paths) metadata work and reports it honestly</td>
+</tr>
+<tr>
+<td><strong><code>ls &lt;dir&gt;</code></strong></td>
+<td>zero child blobs, zero smudge filters, O(direct children) namespace work</td>
+</tr>
+<tr>
+<td><strong><code>ls -l &lt;dir&gt;</code></strong></td>
+<td>may fault each blob once for exact size (fundamental); reported distinctly</td>
+</tr>
+<tr>
+<td><strong>Clean <code>git status --porcelain=v2</code></strong></td>
+<td>zero blobs, zero smudge filters, no full per-file stat scan — for the <strong>first</strong> and all subsequent clean statuses (via the seed in <a href="#64-fsmonitor-v2--change-journal">§6.4</a>)</td>
+</tr>
+<tr>
+<td><strong><code>cat path</code></strong></td>
+<td>at most the one required blob plus its attribute/filter metadata</td>
+</tr>
+<tr>
+<td><strong>100 concurrent reads of one missing file</strong></td>
+<td>one underlying object retrieval (single-flight)</td>
+</tr>
+<tr>
+<td><strong><code>open(O_WRONLY|O_TRUNC)</code></strong></td>
+<td>does not fetch the old blob</td>
+</tr>
+<tr>
+<td><strong>Repeated 4 KiB writes to a 1 GiB file</strong></td>
+<td>no full-file read/rewrite per callback; no allocation proportional to file size</td>
+</tr>
+<tr>
+<td><strong>Clean rename of an unmaterialized file/subtree</strong></td>
+<td>zero blob contents</td>
+</tr>
+<tr>
+<td><strong><code>git log</code> / <code>branch</code> / <code>tag</code> / <code>status</code></strong></td>
+<td>do not hydrate working-tree blobs to inspect metadata</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>9. Limitations</h1>
+<p>By-design and deferred behaviors are registered in
+<a href="/git-lazy-mount/limitations"><code>limitations.md</code></a>. The load-bearing ones:</p>
+<ul>
+<li><strong><code>getattr</code> size hydration is fundamental to lazy blobs.</strong> The exact size of an
+unmaterialized file requires its blob, so <code>ls -l</code> / <code>stat</code> faults it once. Not
+closeable without a server-side size manifest.</li>
+<li><strong>Smudge-side <code>.gitattributes</code> / LFS serve the raw baseline blob.</strong> A
+smudge-filtered file (<code>eol=crlf</code>, <code>ident</code>, an LFS pointer) reads as its stored
+bytes, not the smudged bytes. Commits stay byte-correct because the clean filter
+is the inverse, and Git's content comparison stays clean.</li>
+<li><strong>Branch transitions are potentially eager</strong> (<a href="#7-required-plain-git-compatibility-surface">§7</a>).</li>
+<li><strong>The change journal has no compaction</strong> and a fixed epoch/generation (1/0).</li>
+<li><strong>LFS end-to-end and nested lazy submodules are deferred</strong> (some submodule tests
+are <code>#[ignore]</code>'d).</li>
+</ul>
+<hr />
+<h1>10. Project status</h1>
+<p>Linux-only, real-<code>/dev/fuse</code>-CI tested (CI runs on <code>ubuntu-latest</code> only). The
+transparent mount drives the full stock-Git surface: stock Git, editors, and
+builds operate directly on the virtual working tree with no wrapper.</p>
+<p>Not supported yet: end-to-end LFS, full nested submodules, and a shared object
+cache across workspaces. Other platforms (macOS/Windows) are out of scope; see
+<a href="future-platforms/"><code>future-platforms/</code></a>.</p>
+<p>Build: <code>cargo build --release -p glm-cli --features fuse</code> produces
+<code>git-lazy-mount</code>; the <code>git-lazy-mount-fsmonitor</code> hook is built alongside and must
+sit next to it. Requires libfuse3 and system Git (≥ 2.36).</p>
+<hr />
+<h1>11. Implementation discipline</h1>
+<p>The priority order, highest first:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-text"><span class="line"><span>stock Git correctness</span></span>
+<span class="line"><span>user-data durability</span></span>
+<span class="line"><span>filesystem correctness</span></span>
+<span class="line"><span>transparent UX</span></span>
+<span class="line"><span>measured laziness</span></span>
+<span class="line"><span>large-repository performance</span></span>
+<span class="line"><span>shared-cache optimization</span></span>
+<span class="line"><span>additional platforms</span></span></code></pre>
+<p>The system must never claim to be transparent while any of these hold: a registry
+says &quot;mounted&quot; without a kernel mount; plain Git cannot discover the repository; a
+gitdir is generated per command; commits must be imported after Git exits; the
+custom stage differs from <code>.git/index</code>; status only works through a wrapper; push
+only works through a bespoke command; <code>ls</code> hydrates every file in a directory;
+read allocates the complete blob; each write rewrites the whole file; open handles
+are path lookups in disguise; open-unlink fails; empty untracked directories
+vanish; one FUSE callback spawns one OS thread; FSMonitor state disappears silently
+on restart; or Git paths are converted lossily to UTF-8.</p>
+</article><nav class="flex justify-between gap-4 mt-12 pt-6 border-t border-border"><span></span><a class="flex-1 px-4 py-3.5 border border-border rounded-xl hover:border-accent text-right" href="/git-lazy-mount/future-platforms/windows"><div class="text-muted text-[.78rem]">Next<!-- --> →</div><div class="font-semibold text-accent">Windows (ProjFS)</div></a></nav><script>document.querySelectorAll('[data-copy-md]').forEach(function(b){b.addEventListener('click',async function(){try{var r=await fetch(b.getAttribute('data-copy-md'));var t=await r.text();await navigator.clipboard.writeText(t);var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1500);}catch(e){alert('Copy failed: '+e);}});});document.querySelectorAll('.prose pre').forEach(function(pre){if(pre.querySelector('.copy-code'))return;var b=document.createElement('button');b.className='copy-code';b.textContent='Copy';b.addEventListener('click',async function(){var c=pre.querySelector('code');try{await navigator.clipboard.writeText(c?c.innerText:pre.innerText);var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1200);}catch(e){}});pre.appendChild(b);});document.querySelectorAll('.tabs').forEach(function(t){t.querySelectorAll('.tab-btn').forEach(function(b){b.addEventListener('click',function(){var i=b.getAttribute('data-tab');t.querySelectorAll('.tab-btn').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-tab')===i);});t.querySelectorAll('.tab-panel').forEach(function(p){p.hidden=p.getAttribute('data-tab')!==i;});});});});(function(){var blocks=document.querySelectorAll('code.language-mermaid');if(!blocks.length)return;var items=[];blocks.forEach(function(c){var pre=c.closest('pre')||c;var h=document.createElement('div');h.className='mermaid-diagram';pre.replaceWith(h);items.push({src:c.textContent,holder:h});});var lib,id=0;function load(){return lib||(lib=import("https://esm.sh/mermaid@11").then(function(m){return m.default;}));}function theme(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'default';}function run(){load().then(function(mermaid){mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:theme()});items.forEach(function(it){mermaid.render('kura-mmd-'+(id++),it.src).then(function(r){it.holder.innerHTML=r.svg;}).catch(function(e){it.holder.innerHTML='<pre class="mermaid-error">'+String((e&&e.message)||e)+'</pre>';});});}).catch(function(){});}run();var cur=document.documentElement.getAttribute('data-theme');new MutationObserver(function(){var t=document.documentElement.getAttribute('data-theme');if(t!==cur){cur=t;run();}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});})();</script></main><aside class="sticky top-14 max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-8 max-lg:hidden"><p class="text-[.72rem] font-bold tracking-wider uppercase text-muted mb-2.5">On this page</p><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#11-the-git-lazy-mount-verb-surface">1.1 The git lazy-mount verb surface</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#51-two-sources-of-truth">5.1 Two sources of truth</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#52-working-tree-model-baseline--overlay">5.2 Working-tree model: baseline + overlay</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#53-crates">5.3 Crates</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#54-on-disk-layout">5.4 On-disk layout</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#55-command-surface">5.5 Command surface</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#56-startup-sequence">5.6 Startup sequence</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#57-the-tree0-default-and-its-rationale">5.7 The tree:0 default and its rationale</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#61-worktree-model">6.1 Worktree model</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#62-fuse-semantics">6.2 FUSE semantics</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#63-object-fetching">6.3 Object fetching</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#64-fsmonitor-v2--change-journal">6.4 FSMonitor v2 + change journal</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#65-git-state-model">6.5 Git state model</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#66-index-strategy">6.6 Index strategy</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#67-durability-and-security">6.7 Durability and security</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#68-deadlock-startup-and-recovery">6.8 Deadlock, startup, and recovery</a></aside></div></div><footer class="border-t border-border mt-8"><div class="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto px-6 py-5 max-md:px-4"><nav class="flex items-center gap-[1.1rem] text-[.85rem]"><a class="text-muted hover:text-fg" href="/git-lazy-mount/llms.txt">llms.txt</a><button type="button" class="inline-flex items-center justify-center w-[30px] h-[30px] p-0 text-[.95rem] leading-none border border-border rounded-lg bg-surface text-fg cursor-pointer hover:bg-hover" data-theme-toggle="true" aria-label="Toggle theme"></button></nav><a class="text-muted text-[.85rem] hover:text-accent" href="https://kura.build/" target="_blank" rel="noreferrer">Powered by Kura</a></div></footer><script>document.addEventListener('keydown',function(e){if(e.key==='/' && !document.documentElement.dataset.ctrlk && !/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')){e.preventDefault();var s=document.querySelector('.search-box');if(s)s.focus();}});(function(){var b=document.querySelector('[data-theme-toggle]');if(!b)return;var d=document.documentElement,order=['system','light','dark'],icon={system:'🖥',light:'☀',dark:'☾'};function pref(){return d.getAttribute('data-theme-pref')||'system';}function res(p){return p==='dark'||(p==='system'&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}function set(p){d.setAttribute('data-theme-pref',p);d.setAttribute('data-theme',res(p));try{localStorage.setItem('kura-theme',p);}catch(e){}b.textContent=icon[p];b.setAttribute('title','Theme: '+p);}set(pref());b.addEventListener('click',function(){set(order[(order.indexOf(pref())+1)%order.length]);});try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(pref()==='system')d.setAttribute('data-theme',res('system'));});}catch(e){}})();document.addEventListener('click',function(e){var t=e.target;document.querySelectorAll('details[data-menu][open]').forEach(function(d){if(!d.contains(t))d.removeAttribute('open');});var it=t.closest&&t.closest('details[data-menu] a, details[data-menu] [data-copy-md]');if(it){var dd=it.closest('details[data-menu]');if(dd)setTimeout(function(){dd.removeAttribute('open');},0);}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details[data-menu][open]').forEach(function(d){d.removeAttribute('open');});});(function(){var root=document.documentElement;function opener(){return document.querySelector('[data-drawer-open]');}function items(){var d=document.getElementById('docs-nav');if(!d)return[];return[].filter.call(d.querySelectorAll('a[href],button:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'),function(el){return el.offsetParent!==null;});}function set(o){var was=root.classList.contains('drawer-open');root.classList.toggle('drawer-open',o);var b=opener();if(b)b.setAttribute('aria-expanded',o?'true':'false');if(o){var f=items();if(f[0])f[0].focus();}else if(was&&b)b.focus();}document.addEventListener('click',function(e){if(e.target.closest('[data-drawer-open]')){e.preventDefault();set(!root.classList.contains('drawer-open'));return;}if(e.target.closest('[data-drawer-close]')){set(false);return;}if(e.target.closest('#docs-nav a'))set(false);});document.addEventListener('keydown',function(e){if(e.key==='Escape'){set(false);return;}if(e.key==='Tab'&&root.classList.contains('drawer-open')){var f=items();if(!f.length)return;var first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}else if(f.indexOf(document.activeElement)<0){e.preventDefault();first.focus();}}});})();(function(){
+  function trim(p){return p.length>1&&p.endsWith('/')?p.slice(0,-1):p;}
+  function sync(){
+    var path=trim(location.pathname), tab=null;
+    var links=document.querySelectorAll('.sidebar a[href],[data-tabbar] a[href]');
+    for(var i=0;i<links.length;i++){var a=links[i],on=trim(a.getAttribute('href'))===path;
+      if(on){a.setAttribute('aria-current','page');var g=a.closest('[data-tab]');if(g)tab=g.getAttribute('data-tab');}
+      else a.removeAttribute('aria-current');}
+    if(tab!=null){
+      document.querySelectorAll('[data-tab]').forEach(function(g){g.hidden=g.getAttribute('data-tab')!==tab;});
+      document.querySelectorAll('[data-tabbar] a').forEach(function(a){
+        if(a.getAttribute('data-tab-key')===tab)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    }
+    // expand the folder(s) holding the active page. Iterate EVERY aria-current sidebar link, not
+    // just the first: a folder-as-page link lives in a <details>, but the mobile tab-bar link (also
+    // in .sidebar, earlier in the DOM) has no folder ancestor — querySelector would pick that one
+    // and expand nothing. forEach opens each link's folder chain; tab links are harmless no-ops.
+    document.querySelectorAll('.sidebar a[aria-current="page"]').forEach(function(cur){
+      var d=cur.closest('details.folder');while(d){d.open=true;d=d.parentElement&&d.parentElement.closest('details.folder');}});
+    // rewrite the locale-switch links to THIS page's equivalent path (swap the locale prefix)
+    var ll=document.querySelectorAll('[data-locale-home]');
+    if(ll.length){var lc=document.querySelector('[data-locale-home][data-locale-active]'),cp=lc?lc.getAttribute('data-locale-home'):'/';cp=cp==='/'?'':cp;
+      var rest=location.pathname;if(cp&&rest.indexOf(cp)===0)rest=rest.slice(cp.length)||'/';
+      ll.forEach(function(a){var h=a.getAttribute('data-locale-home'),p=h==='/'?'':h;a.setAttribute('href',rest==='/'?(p||'/'):(p+rest));});}
+    // mobile nav-context: "Active tab / Page title" (the shell can't know the page server-side)
+    var nc=document.querySelector('[data-nav-context]');
+    if(nc){var at=document.querySelector('[data-tabbar] a[aria-current="page"]'),h1=document.querySelector('main h1');
+      nc.textContent=[at&&at.textContent.trim(),h1&&h1.textContent.trim()].filter(Boolean).join(' / ');}
+  }
+  sync();
+  var outlet=document.querySelector('[data-june-outlet]');
+  if(outlet) new MutationObserver(sync).observe(outlet,{childList:true,subtree:true});
+})();</script><script type="module" src="/git-lazy-mount/_june/client.aa34fb55.js"></script><script type="application/json" id="june-webmcp">[{"name":"search_docs","description":"Hybrid keyword + semantic search over the docs. Returns the most relevant passages with their doc slug, title, and relevance score.","inputSchema":{"type":"object","properties":{"query":{"type":"string","description":"A natural-language question or keywords."},"topK":{"type":"integer","description":"Number of results to return (default 5)."}},"required":["query"]}},{"name":"get_page","description":"Fetch one doc page as clean Markdown by its slug (e.g. introduction, search, agents).","inputSchema":{"type":"object","properties":{"slug":{"type":"string","description":"The page slug."}},"required":["slug"]}},{"name":"list_docs","description":"List every doc page with its slug, title, section, and `sources` (the code paths it documents). The map for finding which pages a code change affects.","inputSchema":{"type":"object","properties":{}}}]</script><script>(function(){var mc=navigator.modelContext;if(!mc||!mc.registerTool)return;var el=document.getElementById('june-webmcp');if(!el)return;var tools;try{tools=JSON.parse(el.textContent)}catch(e){return}var ac=new AbortController();tools.forEach(function(t){mc.registerTool({name:t.name,description:t.description,inputSchema:t.inputSchema,execute:function(args){return fetch('/mcp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:t.name,arguments:args}})}).then(function(r){return r.json()}).then(function(j){return j.result})}},{signal:ac.signal})})})();</script></body></html>

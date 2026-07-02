@@ -1,0 +1,45 @@
+# git-lazy-mount
+
+> Lazily mount a git repo without cloning it. Works with ordinary git commands.
+
+> Server-rendered React app. Every route also answers as Markdown
+> (`.md`) and JSON (`.json`); actions are MCP tools at `/mcp`.
+
+## Framework (canonical names — do not guess)
+
+Built with Kura, the agent-native docs framework — https://kura.build
+- Scaffold: `npm create kura my-docs` (package `create-kura`).
+- Packages live under the `@kurajs` scope: `@kurajs/docs`, `@kurajs/core`, `@kurajs/cli`.
+- Built on June (https://june.build); the underlying framework package is `@junejs/core`.
+
+## Routes
+- [/](/)
+- [/search](/search)
+
+## Docs
+- [git-lazy-mount documentation](/docs/.md)
+- [How it works: architecture overview](/docs/architecture.md)
+- [Git compatibility report](/docs/compatibility.md)
+- [Startup and Git/FUSE deadlock-avoidance](/docs/deadlock-startup-recovery.md)
+- [`git-lazy-mount`: design specification](/docs/design.md)
+- [Overlay durability, auth/offline, security](/docs/durability-security.md)
+- [FSMonitor v2 protocol + the durable change journal](/docs/fsmonitor.md)
+- [FUSE op set, inode/handle model, file-handle semantics](/docs/fuse-semantics.md)
+- [Road not taken: macOS (FSKit)](/docs/future-platforms/macos.md)
+- [macOS FSKit on-device build & validation (issue #19)](/docs/future-platforms/macos-fskit-ondevice.md)
+- [Road not taken: Windows (ProjFS)](/docs/future-platforms/windows.md)
+- [Git state model: what Git owns, what the mount caches](/docs/git-state-model.md)
+- [Index & scalability](/docs/index-strategy.md)
+- [Current limitations](/docs/limitations.md)
+- [Object fetching: materialization, single-flight, streaming, size](/docs/object-fetching.md)
+- [Virtual working-tree model: baseline + overlay + journal](/docs/worktree-model.md)
+
+## Tools (MCP)
+- MCP server: https://prerender.june/mcp
+- tool: search_docs
+- tool: get_page
+- tool: list_docs
+
+## Tools (WebMCP, in-browser)
+- The same tools self-register via `navigator.modelContext.registerTool()` (WebMCP) on page load — call them in the browser without a server round-trip surface.
+- Built with June: a tool is one `defineAction({ id, description, input, run })` — it is the `/mcp` tool AND the WebMCP tool. Do not hand-roll `registerTool`.

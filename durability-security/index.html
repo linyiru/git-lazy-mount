@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" href="/git-lazy-mount/favicon.svg" type="image/svg+xml"/><title>Durability &amp; security - git-lazy-mount</title><meta name="description" content="Lazily mount a git repo without cloning it. Works with ordinary git commands."/><meta property="og:title" content="Durability &amp; security"/><meta property="og:description" content="Lazily mount a git repo without cloning it. Works with ordinary git commands."/><meta property="og:type" content="article"/><script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/*.md"}},{"not":{"href_matches":"/*.json"}},{"not":{"href_matches":"/*.txt"}},{"not":{"href_matches":"/*.xml"}},{"not":{"href_matches":"/mcp"}}]},"eagerness":"moderate"}],"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/*.md"}},{"not":{"href_matches":"/*.json"}},{"not":{"href_matches":"/*.txt"}},{"not":{"href_matches":"/*.xml"}},{"not":{"href_matches":"/mcp"}}]},"eagerness":"moderate"}]}</script><script>(function(){if(HTMLScriptElement.supports&&HTMLScriptElement.supports('speculationrules'))return;var seen=new Set();document.addEventListener('pointerover',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(!a)return;var u=new URL(a.href,location.href);if(u.origin!==location.origin||seen.has(u.pathname)||u.pathname===location.pathname)return;if(/.(md|json)$/.test(u.pathname)||u.pathname==='/mcp')return;seen.add(u.pathname);var l=document.createElement('link');l.rel='prefetch';l.href=u.pathname+u.search;document.head.appendChild(l);},{passive:true});})();</script><style>
+          @view-transition { navigation: auto; }
+          ::view-transition-group(root),
+          ::view-transition-old(root),
+          ::view-transition-new(root) { animation-duration: 120ms; }
+          @media (prefers-reduced-motion: reduce) {
+            ::view-transition-group(*),
+            ::view-transition-old(*),
+            ::view-transition-new(*) { animation: none !important; }
+          }
+</style><link rel="stylesheet" href="/git-lazy-mount/_june/global.36543955.css"/></head><body><script>(function(){try{var p=localStorage.getItem('kura-theme')||'system';var d=document.documentElement;d.setAttribute('data-theme-pref',p);d.setAttribute('data-theme',(p==='dark'||(p==='system'&&matchMedia('(prefers-color-scheme:dark)').matches))?'dark':'light');}catch(e){}})();</script><header class="sticky top-0 z-20 flex items-center gap-4 h-14 px-5 bg-topbar-bg backdrop-blur-sm border-b border-border max-md:px-4 max-md:gap-2.5"><a class="flex items-center gap-1.5 font-bold text-[1.05rem]" href="/git-lazy-mount/">git-lazy-mount<!-- --> <span class="font-normal text-muted text-[.85rem]">Docs</span></a><form class="ml-auto max-md:ml-2 max-md:flex-1 max-md:min-w-0" action="/git-lazy-mount/search" method="get"><input class="w-[280px] max-w-[40vw] px-3 py-2 text-[.9rem] border border-border rounded-lg bg-surface-2 text-fg max-md:w-full max-md:max-w-none search-box" placeholder="Search docs…  (press /)" aria-label="Search" data-search-endpoint="/git-lazy-mount/search.json" data-doc-base="/git-lazy-mount/" data-search-static="1" name="q"/></form><nav class="flex items-center gap-4 text-muted text-[.9rem]"></nav></header><nav data-tabbar="true" class="sticky top-14 z-[15] h-11 bg-bg border-b border-border max-md:hidden"><div class="flex items-stretch gap-6 h-full max-w-[1280px] mx-auto px-5 overflow-x-auto no-scrollbar"><a data-tab-key="Using it" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/compatibility">Using it</a><a data-tab-key="How it works" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/architecture">How it works</a><a data-tab-key="Reference" class="flex items-center text-[.9rem] border-b-2 border-transparent text-muted hover:text-fg [&amp;[aria-current=page]]:text-fg [&amp;[aria-current=page]]:border-accent" href="/git-lazy-mount/design">Reference</a></div></nav><button class="hidden max-md:flex items-center gap-2.5 w-full px-4 py-2.5 bg-bg border-0 border-b border-border text-fg-soft text-[.9rem] text-left cursor-pointer focus-visible:outline-none focus-visible:bg-hover" data-drawer-open="true" aria-controls="docs-nav" aria-expanded="false"><span class="text-[1.05rem] leading-none" aria-hidden="true">☰</span><span class="font-semibold text-fg flex-none">Navigation</span><span class="nav-bar-context text-muted flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" data-nav-context="true"></span></button><div class="drawer-backdrop" data-drawer-close="true" aria-hidden="true"></div><div class="grid grid-cols-[248px_minmax(0,1fr)_220px] max-lg:grid-cols-[248px_minmax(0,1fr)] max-md:grid-cols-1 items-start max-w-[1280px] mx-auto has-tabs"><aside class="sidebar sticky top-[100px] h-[calc(100vh-100px)] overflow-y-auto px-4 py-6 border-r border-border" id="docs-nav"><div data-tabbar="true" class="hidden max-md:flex flex-wrap gap-1.5 mb-4 pb-4 border-b border-border"><a data-tab-key="Using it" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/compatibility">Using it</a><a data-tab-key="How it works" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/architecture">How it works</a><a data-tab-key="Reference" class="px-3 py-1 border border-border rounded-full text-[.85rem] text-fg-soft [&amp;[aria-current=page]]:bg-accent-soft [&amp;[aria-current=page]]:text-accent [&amp;[aria-current=page]]:border-transparent" href="/git-lazy-mount/design">Reference</a></div><div data-tab="Using it"><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">Using it</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/compatibility">Git compatibility report</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/limitations">Current limitations</a></li></ul></div></div><div data-tab="How it works" hidden=""><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">How it works</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/architecture">Architecture overview</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/worktree-model">Worktree model</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/git-state-model">Git state model</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/fuse-semantics">FUSE semantics</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/object-fetching">Object fetching</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/index-strategy">Index &amp; scalability</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/fsmonitor">FSMonitor v2 protocol + the durable change journal</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/deadlock-startup-recovery">Startup &amp; deadlock avoidance</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/durability-security">Durability &amp; security</a></li></ul></div></div><div data-tab="Reference" hidden=""><div class="mb-5"><p class="mb-1.5 ml-2 text-sm font-semibold text-fg">Reference</p><ul class="flex flex-col gap-px"><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/design">Specification</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/windows">Windows (ProjFS)</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/macos">macOS (FSKit)</a></li><li><a class="flex items-center gap-1.5 leading-6 px-2 py-1.5 rounded-md text-sm text-fg-soft hover:bg-hover" href="/git-lazy-mount/future-platforms/macos-fskit-ondevice">macOS on-device</a></li></ul></div></div></aside><div data-june-outlet=""><main class="w-auto max-w-none m-0 min-w-0 px-10 pt-8 pb-20 max-md:px-4 max-md:pt-5 max-md:pb-12"><details class="hidden max-lg:block mb-5 border border-border rounded-xl overflow-hidden"><summary class="chevron flex justify-between items-center cursor-pointer px-3.5 py-2.5 text-[.85rem] font-semibold text-fg-soft">On this page</summary><div class="flex flex-col px-3.5 pt-1 pb-2.5 border-t border-border"><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#1-overlay-storage-layout">1. Overlay storage layout</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#11-content-identity-and-clean-rename">1.1 Content identity and clean rename</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#12-write-protocol-and-durability-ordering">1.2 Write protocol and durability ordering</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#13-change-journal">1.3 Change journal</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#2-process-model-no-daemon-no-ipc">2. Process model (no daemon, no IPC)</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#3-authentication-and-offline">3. Authentication and offline</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#31-fetchpolicy-gate">3.1 FetchPolicy gate</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#32-offline-behaviour">3.2 Offline behaviour</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#4-synthetic-metadata-and-racy-clean">4. Synthetic metadata and racy-clean</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent" href="#5-security-model">5. Security model</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#51-raw-paths-and-traversal-rejection">5.1 Raw paths and traversal rejection</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#52-filter-and-hook-safety">5.2 Filter and hook safety</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#53-redaction">5.3 Redaction</a><a class="py-1.5 text-muted text-[.85rem] hover:text-accent pl-3.5" href="#54-private-directories">5.4 Private directories</a></div></details><div class="flex items-center justify-between gap-4 mb-6"><div class="prose"><h1 class="!m-0">Overlay durability, auth/offline, security</h1></div><div class="relative inline-flex items-stretch flex-none"><button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[.85rem] border border-border border-r-0 rounded-l-lg bg-surface text-fg-soft cursor-pointer hover:bg-hover hover:text-fg" data-copy-md="/git-lazy-mount/durability-security.md"><svg class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copy Markdown</button><details class="relative inline-flex items-stretch" data-menu="true"><summary class="chevron inline-flex items-center justify-center w-[30px] border border-border rounded-r-lg bg-surface text-muted cursor-pointer hover:bg-hover hover:text-fg" aria-label="More actions"></summary><div class="absolute right-0 top-[calc(100%+.4rem)] z-30 min-w-[17rem] flex flex-col gap-px p-1.5 bg-surface border border-border rounded-xl shadow-xl"><button class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" data-copy-md="/git-lazy-mount/durability-security.md"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg><span class="flex flex-col min-w-0"><span class="font-semibold text-[.9rem] text-fg">Copy Markdown</span><span class="text-[.8rem] text-muted">Copy this page as Markdown for LLMs</span></span></button><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="/git-lazy-mount/durability-security.md"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M16 21H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l4 4v12a2 2 0 0 1-2 2z"></path><path d="M9 13h6M9 17h4"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">View as Markdown<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">View this page as plain text</span></span></a><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="https://chatgpt.com/?q=Please%20read%20this%20doc%20and%20answer%20my%20questions%3A%20Durability%20%26%20security" target="_blank" rel="noreferrer"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">Open in ChatGPT<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">Ask ChatGPT about this page</span></span></a><a class="flex items-start gap-2.5 w-full px-2.5 py-2 rounded-lg bg-transparent border-0 text-fg-soft text-left cursor-pointer hover:bg-hover" href="https://claude.ai/new?q=Please%20read%20this%20doc%20and%20answer%20my%20questions%3A%20Durability%20%26%20security" target="_blank" rel="noreferrer"><svg class="flex-none mt-0.5 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"></path></svg><span class="flex flex-col min-w-0"><span class="inline-flex items-center gap-1 font-semibold text-[.9rem] text-fg">Open in Claude<!-- --> <svg class="text-muted" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg></span><span class="text-[.8rem] text-muted">Ask Claude about this page</span></span></a></div></details></div></div><article class="prose"><p>This area of the <a href="/git-lazy-mount/design">specification</a> covers how the writable overlay
+reaches the disk durably, how authentication and offline behaviour are gated so
+a filesystem callback never prompts, and the security model for treating
+repository data as untrusted. Read alongside
+<a href="/git-lazy-mount/architecture"><code>architecture.md</code></a> (baseline + overlay model,
+two-sources-of-truth).</p>
+<p>Scope. This document owns only the <em>working-tree bytes</em> the mount writes. Git's
+gitdir owns refs, index, reflogs, and commits; we never duplicate or journal
+them here. Related depth lives in its canonical owners:</p>
+<ul>
+<li>baseline/overlay/tombstone/<code>BaseRef</code> model and rename semantics:
+<a href="/git-lazy-mount/worktree-model"><code>worktree-model.md</code></a></li>
+<li><code>materialize_path</code>, single-flight, <code>smudge_blob</code>, exact size/metadata:
+<a href="/git-lazy-mount/object-fetching"><code>object-fetching.md</code></a></li>
+<li>the FSMonitor seed, change journal, and zero-blob first status:
+<a href="/git-lazy-mount/fsmonitor"><code>fsmonitor.md</code></a></li>
+<li>startup sequence and FUSE/git deadlock-avoidance:
+<a href="/git-lazy-mount/deadlock-startup-recovery"><code>deadlock-startup-recovery.md</code></a></li>
+<li>the per-path <code>Durability</code>/<code>Residency</code> state axes:
+<a href="/git-lazy-mount/git-state-model"><code>git-state-model.md</code></a></li>
+</ul>
+<hr />
+<h2 id="1-overlay-storage-layout">1. Overlay storage layout</h2>
+<p>The overlay (<code>crates/worktree/src/overlay.rs</code>) records local working-tree changes
+on top of the read-only baseline: created/modified files, symlinks, explicit
+(empty) directories, deletions (tombstones), and clean-rename base-refs. It owns
+working-tree <strong>bytes</strong> only — never Git state.</p>
+<p>Storage is split:</p>
+<ul>
+<li><strong>Content</strong> lives in native files under <code>overlay/content/</code>, addressed by an
+opaque content id and served by FD, never buffered whole.</li>
+<li><strong>Namespace</strong> is a parent-indexed map persisted as <strong>one atomic JSON sidecar
+per entry</strong> under <code>overlay/meta/</code>, named <code>id_for(path) = sha256(path bytes) + &quot;.json&quot;</code> (<code>overlay.rs</code> <code>id_for</code>). The in-memory index (<code>path -&gt; OverlayEntry</code>
+plus a parent → child-names map for <code>O(direct children)</code> listing) is a
+disposable cache rebuilt from the sidecars on <code>Overlay::open</code>.</li>
+</ul>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code><span class="line"><span>&#x3C;workspace>/overlay/</span></span>
+<span class="line"><span>  meta/</span></span>
+<span class="line"><span>    &#x3C;sha256(path)>.json     one sidecar per overlay entry (raw path + entry)</span></span>
+<span class="line"><span>    &#x3C;sha256(path)>.tmp      in-flight write (temp+fsync+rename)</span></span>
+<span class="line"><span>  content/</span></span>
+<span class="line"><span>    c&#x3C;pid>-&#x3C;seq>            native content blobs, served by FD</span></span></code></pre>
+<p>The entry shape is the <code>OverlayEntry</code> enum:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-rust"><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">pub</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> enum</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> OverlayEntry</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">    File</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { content</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> String</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, executable</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> bool</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> },  </span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">// bytes in overlay/content/&#x3C;content></span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">    Symlink</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { target</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> Vec</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">&#x3C;</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">u8</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">> },                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">// raw target stored inline</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">    Dir</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">,                                          </span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">// explicit (e.g. created empty) dir</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">    Tombstone</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">,                                    </span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">// a deleted baseline path</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">    BaseRef</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { oid</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> ObjectId</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, mode</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> GitMode</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> },     </span><span style="--shiki-light:#6A737D;--shiki-dark:#8B949E">// clean-rename target: an existing blob</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">}</span></span></code></pre>
+<p>A corrupt sidecar is skipped at open (the path falls through to the baseline)
+rather than failing the whole mount.</p>
+<h3 id="11-content-identity-and-clean-rename">1.1 Content identity and clean rename</h3>
+<p>Content is keyed by <code>id_for(path) = sha256(path bytes)</code> for its sidecar, and the
+content file itself carries an opaque sequential id (<code>new_content_id</code>). A path
+rename re-keys the overlay entry to the destination sidecar while <strong>keeping</strong> the
+content file (<code>Overlay::rename</code>), so a materialized file's bytes are not copied.</p>
+<p>A <strong>clean</strong> rename of an <em>unmaterialized</em> file fetches <strong>zero blobs</strong>: the
+projection records a <code>BaseRef { oid, mode }</code> at the destination (the existing
+baseline blob, by OID) and a tombstone at the source — no content is fetched or
+copied. The detailed rename rules (RENAME_NOREPLACE honoured, RENAME_EXCHANGE
+rejected, directory/subtree rename metadata-only) live in
+<a href="/git-lazy-mount/worktree-model"><code>worktree-model.md</code></a>.</p>
+<h3 id="12-write-protocol-and-durability-ordering">1.2 Write protocol and durability ordering</h3>
+<p>One overlay mutation writes content first, then the namespace sidecar that
+references it, each atomically:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code><span class="line"><span>1. content   -> create overlay/content/&#x3C;id> (the write path does not fsync it;</span></span>
+<span class="line"><span>                it is made durable only when the app calls fsync/fdatasync)</span></span>
+<span class="line"><span>2. namespace -> write meta/&#x3C;id>.tmp, fsync it, rename into place,</span></span>
+<span class="line"><span>                then fsync the parent directory so the rename is durable</span></span></code></pre>
+<p><code>atomic_write</code> (<code>overlay.rs</code>) performs the temp-write + <code>sync_all</code> +
+<code>rename</code> + best-effort parent-directory <code>sync_all</code>; the parent-dir fsync is what
+keeps an acknowledged create/rename from being lost after the file itself was
+fsynced. Content is durable <strong>before</strong> the sidecar that references it, so a crash
+never leaves a sidecar pointing at absent or torn content. Deletion is the
+inverse order (drop the sidecar, then unlink the content file), so a crash leaves
+at most an unreferenced orphan, never a dangling reference.</p>
+<p>The per-path <code>Durability</code> ladder is defined in <code>crates/core/src/state.rs</code>. It is
+a 5-variant ordered enum; a higher level implies all lower guarantees:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-rust"><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">pub</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> enum</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> Durability</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">InMemory</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">Journaled</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">DataFsynced</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">MetadataCommitted</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">OperationSealed</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> }</span></span></code></pre>
+<p>We only claim crash durability for writes the application actually <code>fsync</code>ed.
+<code>flush</code>/<code>release</code> publish to the overlay but do not force an <code>fsync</code> unless the
+app called <code>fsync</code>/<code>fdatasync</code>.</p>
+<h3 id="13-change-journal">1.3 Change journal</h3>
+<p>The projection optionally carries a <code>ChangeJournal</code>
+(<code>crates/worktree/src/journal.rs</code>): a durable NUL-separated <strong>append log</strong> at
+<code>&lt;gitdir&gt;/glm-fsmonitor/changes.log</code>, replayed into an in-memory <code>Vec</code> on open.
+<code>record()</code> is synchronous (<code>write_all</code> + <code>sync_data</code>) <em>before</em> the FUSE reply, so
+a recorded change is on disk before the mutation is acknowledged. This journal
+feeds FSMonitor continuity, not a second history; its token form and
+full-invalidation rules are owned by <a href="/git-lazy-mount/fsmonitor"><code>fsmonitor.md</code></a>.</p>
+<p>Known hardening gap: the journal has <strong>no compaction</strong> — <code>State.paths</code> is kept
+whole, so the log and its in-memory replay grow unbounded over the life of a
+mount. Epoch and generation are fixed at <code>1</code> and <code>0</code>.</p>
+<hr />
+<h2 id="2-process-model-no-daemon-no-ipc">2. Process model (no daemon, no IPC)</h2>
+<p>There is no daemon and no IPC/control socket. <code>git lazy-mount &lt;url&gt; &lt;path&gt;</code>
+clones, builds the index, seeds FSMonitor, then spawns a <strong>detached hidden
+<code>__serve</code> child</strong> (<code>crates/cli/src/main.rs</code>) whose stdio is nulled and which is
+reparented to init and not waited on. That child opens the <code>AdminRepo</code>,
+<code>ChangeJournal</code>, and <code>Projection</code>, then calls <code>glm_fuse::mount</code>, which blocks
+until unmount. The only CLI verbs are the default mount form, <code>Unmount</code>,
+<code>Doctor</code>, and the internal <code>__serve</code>.</p>
+<p>Single-writer discipline is in-process: one <code>__serve</code> child holds the mount and
+is the only overlay writer. Startup and its
+deadlock-avoidance invariants are documented in
+<a href="/git-lazy-mount/deadlock-startup-recovery"><code>deadlock-startup-recovery.md</code></a>.</p>
+<hr />
+<h2 id="3-authentication-and-offline">3. Authentication and offline</h2>
+<p>The principle: <strong>interactive auth only at the <code>mount</code> command; every FUSE
+callback is non-interactive.</strong> This is enforced at the process layer.</p>
+<ul>
+<li>The clone in <code>AdminRepo::clone</code> (<code>crates/git-repo/src/lib.rs</code>) may use the
+user's normal credential helper interactively, but still sets
+<code>GIT_TERMINAL_PROMPT=0</code> so a non-interactive run fails fast instead of
+hanging.</li>
+<li>Every spawned <code>git</code> runs with stdin = <code>Stdio::null()</code> and hardened
+(CLOEXEC'd) fds (<code>crates/git-store/src/proc.rs</code>), so a callback-spawned <code>git</code>
+never inherits a terminal and a credential prompt cannot appear.</li>
+</ul>
+<h3 id="31-fetchpolicy-gate">3.1 FetchPolicy gate</h3>
+<p><code>FetchPolicy</code> (<code>crates/core/src/fetch.rs</code>) decides whether resolving an object
+may touch the network. Filesystem callbacks read with a non-fetching policy, so a
+read can never prompt or escalate to the network:</p>
+<pre class="shiki shiki-themes github-light github-dark-default" style="--shiki-light:#24292e;--shiki-dark:#e6edf3;--shiki-light-bg:#fff;--shiki-dark-bg:#0d1117" tabindex="0"><code class="language-rust"><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">pub</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> enum</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> FetchPolicy</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">CacheOnly</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">AllowNetwork</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">Prefetch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">MustNotFetch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> }</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">pub</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> fn</span><span style="--shiki-light:#6F42C1;--shiki-dark:#D2A8FF"> may_fetch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">&#x26;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF">self</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> bool</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3"> { </span><span style="--shiki-light:#6F42C1;--shiki-dark:#D2A8FF">matches!</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79C0FF">self</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657">AllowNetwork</span><span style="--shiki-light:#D73A49;--shiki-dark:#FF7B72"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#FFA657"> Prefetch</span><span style="--shiki-light:#24292E;--shiki-dark:#E6EDF3">) }</span></span></code></pre>
+<p><code>CacheOnly</code> maps to <code>GIT_NO_LAZY_FETCH=1</code> on the git side, and <code>MustNotFetch</code>
+additionally asserts the path never initiates I/O. On read paths <code>git-store</code>
+serves objects with <code>GIT_NO_LAZY_FETCH</code> set (<code>crates/git-store/src/store.rs</code>);
+hydration that <em>is</em> allowed to fetch goes through <code>materialize_path</code> (see
+<a href="/git-lazy-mount/object-fetching"><code>object-fetching.md</code></a>).</p>
+<table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>Policy</th>
+<th>May prompt?</th>
+<th>May hit network?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mount</code> clone</td>
+<td>git's own helper</td>
+<td>yes (clone only)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>FUSE read/getattr</td>
+<td><code>CacheOnly</code> / <code>MustNotFetch</code></td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>materialize_path</code> hydration</td>
+<td><code>AllowNetwork</code></td>
+<td>no (cached creds)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>user-run <code>git fetch</code>/<code>pull</code>/<code>push</code></td>
+<td>git's own</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-offline-behaviour">3.2 Offline behaviour</h3>
+<p>When an object is genuinely missing and the policy forbids a fetch, the read
+returns <code>ErrorCode::OfflineMissingObject</code>, which maps to <strong><code>EIO</code> (5)</strong>
+(<code>crates/core/src/error.rs</code>), promptly and without blocking. Two facts follow
+from the storage model:</p>
+<ul>
+<li><strong>Dirty overlay content never depends on the network.</strong> Overlay files are
+self-contained native bytes, so reads of locally-written content never call the
+fetcher.</li>
+<li>A <code>BaseRef</code> entry (clean rename of an unmaterialized file) whose blob is absent
+returns <code>OfflineMissingObject</code> on a <strong>content</strong> read, but its namespace
+presence (lookup/readdir/rename) needs no network.</li>
+</ul>
+<p>When a fetch fails with expired credentials, <code>git-store</code> classifies it as
+<code>ErrorCode::Authentication</code>, which maps to <strong><code>EACCES</code> (13)</strong> and is retryable by
+default (<code>error.rs</code> <code>default_retryable</code>). The recommended action points the user
+at <code>git lazy-mount doctor</code>; a subsequent user-run <code>git fetch</code> re-primes the
+credential helper and later reads of the same object succeed without a remount.</p>
+<hr />
+<h2 id="4-synthetic-metadata-and-racy-clean">4. Synthetic metadata and racy-clean</h2>
+<p><code>getattr</code> is served by the projection's <code>attr_of</code> (<code>crates/worktree</code>) and the
+mount's <code>fuse_attr</code> (<code>crates/fuse/src/mount.rs</code>). The behaviour is:</p>
+<ul>
+<li>A <strong>clean</strong> (unmaterialized) entry reports a stable mode and a fixed
+<code>UNIX_EPOCH</code> mtime — never the wall clock — so re-reading it never advances its
+timestamp.</li>
+<li>A <strong>materialized</strong> overlay file reports its real on-disk <code>stat</code> (mtime, size).</li>
+<li>Exact size of an unmaterialized blob is only computed when <code>getattr</code> genuinely
+needs it (<code>ls -l</code>/<code>stat</code> faults the blob once; <code>readdir</code> does not), because a
+tree carries no blob sizes.</li>
+</ul>
+<p>This stability matters for git's racy-clean handling: git re-hashes an index
+entry whose file mtime is <code>&gt;=</code> the index timestamp. Because clean entries report
+a fixed epoch mtime that is strictly earlier than any index git writes after
+mount, clean unmaterialized files are never racy and a clean <code>git status</code> faults
+zero blobs.</p>
+<p>The first clean status faulting zero blobs depends on the <strong>FSMonitor seed</strong>
+(<code>AdminRepo::seed_fsmonitor_valid</code>), which marks every index entry
+<code>CE_FSMONITOR_VALID</code> so git's <code>refresh_cache_ent</code> early-returns before any
+<code>lstat</code>. Under the default <code>--filter=tree:0</code> clone, a freshly <code>read-tree</code>'d index
+carries no FSMonitor extension, so without the seed git would stat (and fault)
+every entry on the first status. Paths under a checkout conversion
+(<code>filter=</code> / <code>ident</code> / <code>working-tree-encoding=</code> / CRLF <code>eol</code>) are carved out:
+the seed is <strong>skipped wholesale</strong> if any tracked <code>.gitattributes</code> declares such
+an attribute, so git checks those paths normally. The seed, its token identity
+requirement, and the conversion carve-out are owned by
+<a href="/git-lazy-mount/fsmonitor"><code>fsmonitor.md</code></a>.</p>
+<hr />
+<h2 id="5-security-model">5. Security model</h2>
+<p>Repository data is <strong>untrusted</strong>. Threats and the mechanisms that actually exist:</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Mitigation</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>path traversal</td>
+<td><code>RepoPath::from_bytes</code> rejects NUL, absolute, empty, and <code>.</code>/<code>..</code> components</td>
+<td><code>core/src/path.rs</code> (<code>PathError</code>)</td>
+</tr>
+<tr>
+<td>malicious tree names</td>
+<td>raw-byte paths, no shell construction, NUL-delimited git plumbing</td>
+<td><code>core/src/path.rs</code>, <code>git-store/src/tree_parse.rs</code></td>
+</tr>
+<tr>
+<td>corrupt object responses</td>
+<td><code>LocalObjectCorruption</code> on integrity failure → <code>EIO</code></td>
+<td><code>core/src/error.rs</code></td>
+</tr>
+<tr>
+<td>hung/failed filters</td>
+<td><code>FilterFailure</code> → <code>EIO</code>; <code>ResourceLimit</code> → <code>ENOSPC</code></td>
+<td><code>core/src/error.rs</code></td>
+</tr>
+<tr>
+<td>recursive lazy-fetch deadlock</td>
+<td>object reads run with <code>GIT_NO_LAZY_FETCH</code>; smudge pre-faults <code>.gitattributes</code></td>
+<td><code>git-store/src/store.rs</code></td>
+</tr>
+<tr>
+<td>credential leakage</td>
+<td>URLs/tokens redacted in diagnostics; summaries/context carry no secrets</td>
+<td><code>git-store/src/proc.rs</code>, <code>core/src/error.rs</code></td>
+</tr>
+<tr>
+<td>protected <code>.git</code></td>
+<td>any op on the synthetic <code>.git</code> returns <code>Authentication</code>, not a path probe</td>
+<td><code>worktree</code> <code>child_path</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="51-raw-paths-and-traversal-rejection">5.1 Raw paths and traversal rejection</h3>
+<p><code>RepoPath</code> stores paths as raw non-NUL bytes and is the only validated path
+identity. <code>from_bytes</code> rejects a NUL byte, a leading <code>/</code>, an empty component
+(<code>a//b</code>), and any <code>.</code>/<code>..</code> traversal component, returning a typed <code>PathError</code>.
+Lossy Unicode is never used as an identity key: <code>RepoPath</code> exposes separate APIs
+for identity (<code>as_bytes</code>), human display, and reversible escaping for logs/JSON.
+A non-UTF-8 overlay path round-trips through reopen (the <code>Sidecar.path</code> is stored
+as raw bytes).</p>
+<h3 id="52-filter-and-hook-safety">5.2 Filter and hook safety</h3>
+<p>Passive hydration must never run a git hook and never silently execute an
+untrusted command. The mount serves objects through <code>cat-file</code>-class readers and,
+when a path declares a clean/smudge filter, <code>GitStore::smudge_blob</code> (which runs
+<code>git cat-file --filters --path --attr-source</code>, <code>crates/git-store/src/store.rs</code>).
+It never invokes git porcelain and never the hooks directory, so hooks run only
+because the user invoked a git command that normally runs them. The
+<code>GIT_NO_LAZY_FETCH</code> environment on read paths keeps a filter from triggering a
+recursive lazy-fetch subprocess that could deadlock a callback.</p>
+<h3 id="53-redaction">5.3 Redaction</h3>
+<p>Errors and logs carry only redacted breadcrumbs. <code>git-store</code>'s classifier keeps
+only the first few lines of git's stderr and never echoes full URLs (which can
+carry tokens) verbatim into a summary (<code>proc.rs</code>). In the <code>Error</code> model the
+<code>summary</code> field is documented to contain no secrets and <code>context</code> breadcrumbs are
+the caller's responsibility to redact (<code>core/src/error.rs</code>). File contents never
+appear in errors or the change journal.</p>
+<h3 id="54-private-directories">5.4 Private directories</h3>
+<p>Workspace and cache directories live under <code>data_dir()</code>
+(<code>$XDG_DATA_HOME/git-lazy-mount</code>, else <code>~/.local/share/git-lazy-mount</code>), keyed by
+a per-mountpoint hash, holding <code>git/</code>, <code>cache/</code>, <code>overlay/</code>, and <code>anchor/</code>. They
+are private to the invoking user. The synthetic <code>.git</code> inside the mount is
+protected not by a reserved inode but by <code>child_path</code> rejecting any operation on
+<code>.git</code> with <code>ErrorCode::Authentication</code>.</p>
+</article><nav class="flex justify-between gap-4 mt-12 pt-6 border-t border-border"><a class="flex-1 px-4 py-3.5 border border-border rounded-xl hover:border-accent" href="/git-lazy-mount/deadlock-startup-recovery"><div class="text-muted text-[.78rem]">← <!-- -->Previous</div><div class="font-semibold text-accent">Startup &amp; deadlock avoidance</div></a><span></span></nav><script>document.querySelectorAll('[data-copy-md]').forEach(function(b){b.addEventListener('click',async function(){try{var r=await fetch(b.getAttribute('data-copy-md'));var t=await r.text();await navigator.clipboard.writeText(t);var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1500);}catch(e){alert('Copy failed: '+e);}});});document.querySelectorAll('.prose pre').forEach(function(pre){if(pre.querySelector('.copy-code'))return;var b=document.createElement('button');b.className='copy-code';b.textContent='Copy';b.addEventListener('click',async function(){var c=pre.querySelector('code');try{await navigator.clipboard.writeText(c?c.innerText:pre.innerText);var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o;},1200);}catch(e){}});pre.appendChild(b);});document.querySelectorAll('.tabs').forEach(function(t){t.querySelectorAll('.tab-btn').forEach(function(b){b.addEventListener('click',function(){var i=b.getAttribute('data-tab');t.querySelectorAll('.tab-btn').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-tab')===i);});t.querySelectorAll('.tab-panel').forEach(function(p){p.hidden=p.getAttribute('data-tab')!==i;});});});});(function(){var blocks=document.querySelectorAll('code.language-mermaid');if(!blocks.length)return;var items=[];blocks.forEach(function(c){var pre=c.closest('pre')||c;var h=document.createElement('div');h.className='mermaid-diagram';pre.replaceWith(h);items.push({src:c.textContent,holder:h});});var lib,id=0;function load(){return lib||(lib=import("https://esm.sh/mermaid@11").then(function(m){return m.default;}));}function theme(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'default';}function run(){load().then(function(mermaid){mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:theme()});items.forEach(function(it){mermaid.render('kura-mmd-'+(id++),it.src).then(function(r){it.holder.innerHTML=r.svg;}).catch(function(e){it.holder.innerHTML='<pre class="mermaid-error">'+String((e&&e.message)||e)+'</pre>';});});}).catch(function(){});}run();var cur=document.documentElement.getAttribute('data-theme');new MutationObserver(function(){var t=document.documentElement.getAttribute('data-theme');if(t!==cur){cur=t;run();}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});})();</script></main><aside class="sticky top-14 max-h-[calc(100vh-56px)] overflow-y-auto px-4 py-8 max-lg:hidden"><p class="text-[.72rem] font-bold tracking-wider uppercase text-muted mb-2.5">On this page</p><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#1-overlay-storage-layout">1. Overlay storage layout</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#11-content-identity-and-clean-rename">1.1 Content identity and clean rename</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#12-write-protocol-and-durability-ordering">1.2 Write protocol and durability ordering</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#13-change-journal">1.3 Change journal</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#2-process-model-no-daemon-no-ipc">2. Process model (no daemon, no IPC)</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#3-authentication-and-offline">3. Authentication and offline</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#31-fetchpolicy-gate">3.1 FetchPolicy gate</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#32-offline-behaviour">3.2 Offline behaviour</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#4-synthetic-metadata-and-racy-clean">4. Synthetic metadata and racy-clean</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent" href="#5-security-model">5. Security model</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#51-raw-paths-and-traversal-rejection">5.1 Raw paths and traversal rejection</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#52-filter-and-hook-safety">5.2 Filter and hook safety</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#53-redaction">5.3 Redaction</a><a class="block py-1 text-muted text-[.85rem] hover:text-accent pl-3 text-[.82rem]" href="#54-private-directories">5.4 Private directories</a></aside></div></div><footer class="border-t border-border mt-8"><div class="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto px-6 py-5 max-md:px-4"><nav class="flex items-center gap-[1.1rem] text-[.85rem]"><a class="text-muted hover:text-fg" href="/git-lazy-mount/llms.txt">llms.txt</a><button type="button" class="inline-flex items-center justify-center w-[30px] h-[30px] p-0 text-[.95rem] leading-none border border-border rounded-lg bg-surface text-fg cursor-pointer hover:bg-hover" data-theme-toggle="true" aria-label="Toggle theme"></button></nav><a class="text-muted text-[.85rem] hover:text-accent" href="https://kura.build/" target="_blank" rel="noreferrer">Powered by Kura</a></div></footer><script>document.addEventListener('keydown',function(e){if(e.key==='/' && !document.documentElement.dataset.ctrlk && !/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')){e.preventDefault();var s=document.querySelector('.search-box');if(s)s.focus();}});(function(){var b=document.querySelector('[data-theme-toggle]');if(!b)return;var d=document.documentElement,order=['system','light','dark'],icon={system:'🖥',light:'☀',dark:'☾'};function pref(){return d.getAttribute('data-theme-pref')||'system';}function res(p){return p==='dark'||(p==='system'&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}function set(p){d.setAttribute('data-theme-pref',p);d.setAttribute('data-theme',res(p));try{localStorage.setItem('kura-theme',p);}catch(e){}b.textContent=icon[p];b.setAttribute('title','Theme: '+p);}set(pref());b.addEventListener('click',function(){set(order[(order.indexOf(pref())+1)%order.length]);});try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(pref()==='system')d.setAttribute('data-theme',res('system'));});}catch(e){}})();document.addEventListener('click',function(e){var t=e.target;document.querySelectorAll('details[data-menu][open]').forEach(function(d){if(!d.contains(t))d.removeAttribute('open');});var it=t.closest&&t.closest('details[data-menu] a, details[data-menu] [data-copy-md]');if(it){var dd=it.closest('details[data-menu]');if(dd)setTimeout(function(){dd.removeAttribute('open');},0);}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('details[data-menu][open]').forEach(function(d){d.removeAttribute('open');});});(function(){var root=document.documentElement;function opener(){return document.querySelector('[data-drawer-open]');}function items(){var d=document.getElementById('docs-nav');if(!d)return[];return[].filter.call(d.querySelectorAll('a[href],button:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'),function(el){return el.offsetParent!==null;});}function set(o){var was=root.classList.contains('drawer-open');root.classList.toggle('drawer-open',o);var b=opener();if(b)b.setAttribute('aria-expanded',o?'true':'false');if(o){var f=items();if(f[0])f[0].focus();}else if(was&&b)b.focus();}document.addEventListener('click',function(e){if(e.target.closest('[data-drawer-open]')){e.preventDefault();set(!root.classList.contains('drawer-open'));return;}if(e.target.closest('[data-drawer-close]')){set(false);return;}if(e.target.closest('#docs-nav a'))set(false);});document.addEventListener('keydown',function(e){if(e.key==='Escape'){set(false);return;}if(e.key==='Tab'&&root.classList.contains('drawer-open')){var f=items();if(!f.length)return;var first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}else if(f.indexOf(document.activeElement)<0){e.preventDefault();first.focus();}}});})();(function(){
+  function trim(p){return p.length>1&&p.endsWith('/')?p.slice(0,-1):p;}
+  function sync(){
+    var path=trim(location.pathname), tab=null;
+    var links=document.querySelectorAll('.sidebar a[href],[data-tabbar] a[href]');
+    for(var i=0;i<links.length;i++){var a=links[i],on=trim(a.getAttribute('href'))===path;
+      if(on){a.setAttribute('aria-current','page');var g=a.closest('[data-tab]');if(g)tab=g.getAttribute('data-tab');}
+      else a.removeAttribute('aria-current');}
+    if(tab!=null){
+      document.querySelectorAll('[data-tab]').forEach(function(g){g.hidden=g.getAttribute('data-tab')!==tab;});
+      document.querySelectorAll('[data-tabbar] a').forEach(function(a){
+        if(a.getAttribute('data-tab-key')===tab)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    }
+    // expand the folder(s) holding the active page. Iterate EVERY aria-current sidebar link, not
+    // just the first: a folder-as-page link lives in a <details>, but the mobile tab-bar link (also
+    // in .sidebar, earlier in the DOM) has no folder ancestor — querySelector would pick that one
+    // and expand nothing. forEach opens each link's folder chain; tab links are harmless no-ops.
+    document.querySelectorAll('.sidebar a[aria-current="page"]').forEach(function(cur){
+      var d=cur.closest('details.folder');while(d){d.open=true;d=d.parentElement&&d.parentElement.closest('details.folder');}});
+    // rewrite the locale-switch links to THIS page's equivalent path (swap the locale prefix)
+    var ll=document.querySelectorAll('[data-locale-home]');
+    if(ll.length){var lc=document.querySelector('[data-locale-home][data-locale-active]'),cp=lc?lc.getAttribute('data-locale-home'):'/';cp=cp==='/'?'':cp;
+      var rest=location.pathname;if(cp&&rest.indexOf(cp)===0)rest=rest.slice(cp.length)||'/';
+      ll.forEach(function(a){var h=a.getAttribute('data-locale-home'),p=h==='/'?'':h;a.setAttribute('href',rest==='/'?(p||'/'):(p+rest));});}
+    // mobile nav-context: "Active tab / Page title" (the shell can't know the page server-side)
+    var nc=document.querySelector('[data-nav-context]');
+    if(nc){var at=document.querySelector('[data-tabbar] a[aria-current="page"]'),h1=document.querySelector('main h1');
+      nc.textContent=[at&&at.textContent.trim(),h1&&h1.textContent.trim()].filter(Boolean).join(' / ');}
+  }
+  sync();
+  var outlet=document.querySelector('[data-june-outlet]');
+  if(outlet) new MutationObserver(sync).observe(outlet,{childList:true,subtree:true});
+})();</script><script type="module" src="/git-lazy-mount/_june/client.aa34fb55.js"></script><script type="application/json" id="june-webmcp">[{"name":"search_docs","description":"Hybrid keyword + semantic search over the docs. Returns the most relevant passages with their doc slug, title, and relevance score.","inputSchema":{"type":"object","properties":{"query":{"type":"string","description":"A natural-language question or keywords."},"topK":{"type":"integer","description":"Number of results to return (default 5)."}},"required":["query"]}},{"name":"get_page","description":"Fetch one doc page as clean Markdown by its slug (e.g. introduction, search, agents).","inputSchema":{"type":"object","properties":{"slug":{"type":"string","description":"The page slug."}},"required":["slug"]}},{"name":"list_docs","description":"List every doc page with its slug, title, section, and `sources` (the code paths it documents). The map for finding which pages a code change affects.","inputSchema":{"type":"object","properties":{}}}]</script><script>(function(){var mc=navigator.modelContext;if(!mc||!mc.registerTool)return;var el=document.getElementById('june-webmcp');if(!el)return;var tools;try{tools=JSON.parse(el.textContent)}catch(e){return}var ac=new AbortController();tools.forEach(function(t){mc.registerTool({name:t.name,description:t.description,inputSchema:t.inputSchema,execute:function(args){return fetch('/mcp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:t.name,arguments:args}})}).then(function(r){return r.json()}).then(function(j){return j.result})}},{signal:ac.signal})})})();</script></body></html>
