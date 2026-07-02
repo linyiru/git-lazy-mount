@@ -1,0 +1,43 @@
+# git-lazy-mount docs, the ONLY config. `kura build` reads this and generates the site.
+# The repo is Rust; the workflow builds Kura in an isolated ./site dir (docs copied in as content,
+# docs/README.md as the homepage), so the repo root is untouched. Deployed by .github/workflows/docs.yml.
+
+markdown  = "commonmark"
+base_path = ""
+[site]
+name        = "git-lazy-mount"
+description = "Lazily mount a git repo without cloning it. Works with ordinary git commands."
+[deploy]
+target    = "github-pages"
+base_path = "/git-lazy-mount"
+[content]
+sources = []
+[[nav.tabs]]
+title  = "Using it"
+groups = ["using"]
+[[nav.tabs]]
+title  = "How it works"
+groups = ["internals"]
+[[nav.tabs]]
+title  = "Reference"
+groups = ["reference"]
+[nav.groups.using]
+title = "Using it"
+pages = ["compatibility", "limitations"]
+[nav.groups.internals]
+title = "How it works"
+pages = [
+  { slug = "architecture", title = "Architecture overview" }, { slug = "worktree-model", title = "Worktree model" },
+  { slug = "git-state-model", title = "Git state model" }, { slug = "fuse-semantics", title = "FUSE semantics" },
+  { slug = "object-fetching", title = "Object fetching" }, { slug = "index-strategy", title = "Index & scalability" },
+  "fsmonitor", { slug = "deadlock-startup-recovery", title = "Startup & deadlock avoidance" },
+  { slug = "durability-security", title = "Durability & security" },
+]
+[nav.groups.reference]
+title = "Reference"
+pages = [
+  { slug = "design", title = "Specification" },
+  { slug = "future-platforms/windows", title = "Windows (ProjFS)" },
+  { slug = "future-platforms/macos", title = "macOS (FSKit)" },
+  { slug = "future-platforms/macos-fskit-ondevice", title = "macOS on-device" },
+]
