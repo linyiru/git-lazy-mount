@@ -22,4 +22,4 @@ New here? Start with the [project README](https://github.com/linyiru/git-lazy-mo
 ## Reference
 
 - [Specification](design.md): the lean, authoritative design the implementation is built and tested against.
-- [Other platforms](future-platforms/): the project is Linux-only. Notes on the Windows ([ProjFS](future-platforms/windows.md)) and macOS ([FSKit](future-platforms/macos.md), [on-device](future-platforms/macos-fskit-ondevice.md)) backends.
+- [Other platforms](future-platforms/windows.md): the project is Linux-only. Notes on the Windows ([ProjFS](future-platforms/windows.md)) and macOS ([FSKit](future-platforms/macos.md), [on-device](future-platforms/macos-fskit-ondevice.md)) backends.
