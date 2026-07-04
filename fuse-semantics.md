@@ -1,20 +1,20 @@
 # FUSE op set, inode/handle model, file-handle semantics
 
-This is the [specification](design.md) chapter for the FUSE callback layer: the
+This is the [specification](/git-lazy-mount/design.md) chapter for the FUSE callback layer: the
 implemented operation set, the inode and file-handle model, the two bounded
 worker pools, and the copy-on-write / open-unlink / rename-while-open behaviors.
 
 It is implemented by `TransparentFs` (`crates/fuse/src/mount.rs`), a
-`fuser::Filesystem` over a [`Projection`](worktree-model.md)
+`fuser::Filesystem` over a [`Projection`](/git-lazy-mount/worktree-model.md)
 (`crates/worktree/src/lib.rs`). The inode table is `glm_fs_common::InodeTable`
 (`crates/fs-common/src/inode.rs`).
 
 Scope boundary: this doc owns the FUSE callbacks, the inode table, and the
 file-handle model. It does **not** own the baseline+overlay content model
-([worktree-model.md](worktree-model.md)), object fetching and exact-size faults
-([object-fetching.md](object-fetching.md)), the FSMonitor change journal
-([fsmonitor.md](fsmonitor.md)), or the index build
-([index-strategy.md](index-strategy.md)). Where those topics surface here, this
+([worktree-model.md](/git-lazy-mount/worktree-model.md)), object fetching and exact-size faults
+([object-fetching.md](/git-lazy-mount/object-fetching.md)), the FSMonitor change journal
+([fsmonitor.md](/git-lazy-mount/fsmonitor.md)), or the index build
+([index-strategy.md](/git-lazy-mount/index-strategy.md)). Where those topics surface here, this
 doc states the FUSE-visible effect and links the owner rather than restating it.
 
 ---
@@ -40,8 +40,8 @@ single-flight fetch) are listed by their owner and only referenced here.
 | FS-CB-1 | No FUSE callback spawns one OS thread per request; blocking callbacks run on a bounded pool, and non-faulting structural callbacks run on a separate pool. |
 
 The deleted `.git` protection and zero-fetch/zero-blob invariants live with
-their owners: [worktree-model.md](worktree-model.md) (`.git` protection, clean
-rename, `readdir` cost) and [object-fetching.md](object-fetching.md)
+their owners: [worktree-model.md](/git-lazy-mount/worktree-model.md) (`.git` protection, clean
+rename, `readdir` cost) and [object-fetching.md](/git-lazy-mount/object-fetching.md)
 (single-flight materialization).
 
 ---
@@ -57,7 +57,7 @@ methods named in the table.
 | `init` | Negotiate `FUSE_ATOMIC_O_TRUNC` (`1 << 3`) so a truncating open arrives as one `open(O_TRUNC)` instead of `open` + `setattr(0)`; falls back silently if unsupported (FS-FH-5). |
 | `lookup` | `Projection::lookup` — resolve a child, allocate a stable inode, reply with attr + generation. |
 | `forget` | `Projection::forget` — drop kernel lookup references; may free the inode (FS-INO-5). |
-| `getattr` | `Projection::getattr` — exact size and generation. On a vanished path with a live FD, falls back to a regular-file attr sized from that FD (FS-FH-4). An unmaterialized clean blob's exact size faults the object once (see [object-fetching.md](object-fetching.md)). |
+| `getattr` | `Projection::getattr` — exact size and generation. On a vanished path with a live FD, falls back to a regular-file attr sized from that FD (FS-FH-4). An unmaterialized clean blob's exact size faults the object once (see [object-fetching.md](/git-lazy-mount/object-fetching.md)). |
 | `setattr` | size → `Projection::truncate`; mode → `Projection::set_executable` (only the exec bit; Git tracks no other mode bits); time/uid/gid accepted and ignored. |
 | `readlink` | `Projection::readlink` — raw target bytes (overlay inline, or baseline blob). |
 | `open` | Allocate a real handle. Writable intent → `Projection::open_write(ino, truncate)` → `Handle::Write`; read intent → `Projection::open_content` → `Handle::Read`. |
@@ -70,7 +70,7 @@ methods named in the table.
 | `mkdir` | `Projection::mkdir` — a persisted empty-directory overlay entry. |
 | `unlink` | `Projection::unlink` — tombstone a baseline path, else clear an overlay-only entry; the inode survives an open handle (FS-INO-3, FS-FH-4). |
 | `rmdir` | `Projection::rmdir` — refuse non-empty (baseline or overlay children); tombstone if baseline-backed. |
-| `rename` | `Projection::rename` — honors `RENAME_NOREPLACE`, **rejects** `RENAME_EXCHANGE`; clean file/subtree moves are metadata-only base-refs, no blob fetch ([worktree-model.md](worktree-model.md)). |
+| `rename` | `Projection::rename` — honors `RENAME_NOREPLACE`, **rejects** `RENAME_EXCHANGE`; clean file/subtree moves are metadata-only base-refs, no blob fetch ([worktree-model.md](/git-lazy-mount/worktree-model.md)). |
 | `symlink` | `Projection::symlink` — overlay symlink with raw target bytes. |
 | `opendir` | Snapshot the full listing once (`Projection::readdir`) on the metadata pool; key it by the returned `fh`. |
 | `readdir` | Serve a slice of the `opendir` snapshot, making paged reads O(entries) instead of O(entries²); falls back to a one-shot `readdir` if the client skipped `opendir`. |
@@ -129,7 +129,7 @@ Identity rules:
 
 There is no reserved synthetic-`.git` inode. The synthetic `.git` is protected
 in `Projection::child_path`, which rejects any mutating op whose path is the root
-`.git` with `ErrorCode::Authentication` ([worktree-model.md](worktree-model.md)).
+`.git` with `ErrorCode::Authentication` ([worktree-model.md](/git-lazy-mount/worktree-model.md)).
 Reads of `.git` resolve to the gitfile bytes and are served from memory.
 
 ---
@@ -163,7 +163,7 @@ size reflects intervening writes.
 ### Copy-on-write and `O_TRUNC`
 
 The write path's copy-up policy lives in `Projection`
-([worktree-model.md](worktree-model.md)); the FUSE-visible contract is:
+([worktree-model.md](/git-lazy-mount/worktree-model.md)); the FUSE-visible contract is:
 
 - `create` and `open_write(ino, truncate = true)` seed an **empty** overlay file
   and fetch **zero** baseline bytes.
@@ -195,7 +195,7 @@ backpressure/cancellation machinery. Content reads go through `git-store`'s
 long-lived `cat-file` batch session against the native gitdir with
 `GIT_NO_LAZY_FETCH` set on the hot path (`crates/git-store/src/batch.rs`,
 `crates/git-store/src/proc.rs`); concurrent first-reads of one missing blob are
-coalesced single-flight ([object-fetching.md](object-fetching.md)).
+coalesced single-flight ([object-fetching.md](/git-lazy-mount/object-fetching.md)).
 
 ---
 

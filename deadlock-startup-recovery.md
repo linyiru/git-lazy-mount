@@ -1,11 +1,11 @@
 # Startup and Git/FUSE deadlock-avoidance
 
-This area of the [specification](design.md) covers two real, load-bearing
+This area of the [specification](/git-lazy-mount/design.md) covers two real, load-bearing
 concerns: the **startup sequence** that `git lazy-mount <url> <path>` runs, and
 the **deadlock invariants** that keep `git` running *inside* the mount from
 wedging the filesystem that serves it. Companion docs:
-[`architecture.md`](architecture.md), [`fuse-semantics.md`](fuse-semantics.md),
-[`object-fetching.md`](object-fetching.md), [`fsmonitor.md`](fsmonitor.md).
+[`architecture.md`](/git-lazy-mount/architecture.md), [`fuse-semantics.md`](/git-lazy-mount/fuse-semantics.md),
+[`object-fetching.md`](/git-lazy-mount/object-fetching.md), [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).
 
 This is explanation grounded in code. Each `INV-…` below is an invariant the
 shipped system upholds; where a regression test exists, it is named. The deadlock invariants are the substantive content here — there is **no
@@ -180,7 +180,7 @@ fails fast (`crates/cli/src/main.rs:143-149`).
    `seed_fsmonitor_valid`, which marks every index entry `CE_FSMONITOR_VALID` at
    the seq-0 token (`main.rs:215-223`). This is why the *first* clean `git status`
    faults zero blobs, not just later ones. The seed is owned and fully explained
-   by [`fsmonitor.md`](fsmonitor.md) (including the conversion-attribute carve-out
+   by [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md) (including the conversion-attribute carve-out
    that skips the seed); other docs link there rather than restate it.
 
 5. **Spawn a detached serve child.** `mount_and_validate` spawns
@@ -217,6 +217,6 @@ transactional cleanup.
   git's `refresh_cache_ent` early-returns on `CE_FSMONITOR_VALID` before any
   `lstat`, and the hook answers "nothing changed" at the seq-0 token. Subsequent
   clean statuses are likewise zero-blob, served from `core.fsmonitor`. Owned by
-  [`fsmonitor.md`](fsmonitor.md).
+  [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).
 - **INV-S3.** Health checks run real `git` inside the live mount, so a deadlock
   regression (cycle 1 or 2) surfaces at mount time, not only under load.

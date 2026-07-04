@@ -5,7 +5,7 @@ bytes and a correct file size — without ever cloning the whole repo. This is
 the home for: blob materialization, per-oid single-flight coalescing,
 `ContentHandle` streaming, the `smudge_blob` filter primitive, and exact-size
 metadata. It owns none of Git's repository state; see
-[git-state-model.md](git-state-model.md).
+[git-state-model.md](/git-lazy-mount/git-state-model.md).
 
 This doc is an *explanation* of the fetch/materialize substrate, all in
 `crates/worktree` and `crates/git-store`:
@@ -85,8 +85,8 @@ The mount serves the **raw baseline blob** here (`blob_to_file` reads the
 unfiltered object). Smudge-side `.gitattributes` conversions
 (`eol=crlf`/`ident`/`working-tree-encoding`/custom `filter=`/LFS) therefore
 diverge on read, while commits stay byte-correct because git's clean filter is
-the inverse. See [compatibility.md](compatibility.md) and
-[limitations.md](limitations.md) for that contract; the read-side filter
+the inverse. See [compatibility.md](/git-lazy-mount/compatibility.md) and
+[limitations.md](/git-lazy-mount/limitations.md) for that contract; the read-side filter
 primitive is `smudge_blob` (§4).
 
 **Invariants (shipped tests):**
@@ -112,7 +112,7 @@ in memory.
 **Invariant.** Peak RSS for a read is bounded by the request length,
 independent of blob size. The `fuse` read path services strictly by file
 handle via `pread`/`pwrite` (no whole-file buffering); see
-[fuse-semantics.md](fuse-semantics.md).
+[fuse-semantics.md](/git-lazy-mount/fuse-semantics.md).
 
 ---
 
@@ -167,8 +167,8 @@ fetches.
 The mount pre-seeds the index FSMonitor extension after `read-tree HEAD` so the
 **first** clean `git status` faults zero blobs (separate from the `ls -l` size
 fault above). That seed, its conversion-attribute carve-out, and the
-full-invalidation rules are owned by [fsmonitor.md](fsmonitor.md); the real
-index build is [index-strategy.md](index-strategy.md). This doc does not
+full-invalidation rules are owned by [fsmonitor.md](/git-lazy-mount/fsmonitor.md); the real
+index build is [index-strategy.md](/git-lazy-mount/index-strategy.md). This doc does not
 re-derive them.
 
 ### 4.4 Batch metadata session
@@ -186,13 +186,13 @@ it runs `GIT_NO_LAZY_FETCH=1`, it must only be queried for present objects;
 
 ## See also
 
-- [worktree-model.md](worktree-model.md) — baseline/overlay, BaseRef, rename.
-- [fuse-semantics.md](fuse-semantics.md) — FUSE ops, handles, the two pools.
-- [fsmonitor.md](fsmonitor.md) — the zero-blob first-status seed (canonical).
-- [index-strategy.md](index-strategy.md) — `read-tree HEAD`, interop bridge.
-- [compatibility.md](compatibility.md) / [limitations.md](limitations.md) —
+- [worktree-model.md](/git-lazy-mount/worktree-model.md) — baseline/overlay, BaseRef, rename.
+- [fuse-semantics.md](/git-lazy-mount/fuse-semantics.md) — FUSE ops, handles, the two pools.
+- [fsmonitor.md](/git-lazy-mount/fsmonitor.md) — the zero-blob first-status seed (canonical).
+- [index-strategy.md](/git-lazy-mount/index-strategy.md) — `read-tree HEAD`, interop bridge.
+- [compatibility.md](/git-lazy-mount/compatibility.md) / [limitations.md](/git-lazy-mount/limitations.md) —
   smudge divergence and the lazy-size fault as documented behavior.
-- [durability-security.md](durability-security.md) — auth/offline gating,
+- [durability-security.md](/git-lazy-mount/durability-security.md) — auth/offline gating,
   `GIT_TERMINAL_PROMPT=0`.
-- [design.md](design.md) — the lean spec this area expands.
+- [design.md](/git-lazy-mount/design.md) — the lean spec this area expands.
 </content>

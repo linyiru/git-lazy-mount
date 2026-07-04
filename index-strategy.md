@@ -2,8 +2,8 @@
 
 How git-lazy-mount builds and presents a Git index without a full checkout, and
 why that stays cheap on large repos. Companion overview:
-[`architecture.md`](./architecture.md); spec: [`design.md`](./design.md). The
-zero-blob-first-status design is owned by [`fsmonitor.md`](./fsmonitor.md); this
+[`architecture.md`](/git-lazy-mount/architecture.md); spec: [`design.md`](/git-lazy-mount/design.md). The
+zero-blob-first-status design is owned by [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md); this
 doc owns the index build and the interop bridge's synthesized index.
 
 ---
@@ -50,7 +50,7 @@ path is read. The result is the single stage that stock `git add`/`status`/
 > would download every tree from all of history; `--depth 1` would graft the
 > commits and break `git merge`/`git rebase`. `tree:0` keeps history, merge-base,
 > and branch switching working while still fetching no trees or blobs up front.
-> See [`object-fetching.md`](./object-fetching.md) for the fetch path.
+> See [`object-fetching.md`](/git-lazy-mount/object-fetching.md) for the fetch path.
 
 ### 1.1 First clean status is zero-blob (FSMonitor pre-seed)
 
@@ -68,7 +68,7 @@ checkout-conversion attribute (`filter=` / `ident` / `working-tree-encoding=` /
 CRLF `eol=crlf`), since those paths' working-tree bytes diverge from the baseline
 blob; an attribute read bounded by `SEED_ATTR_READ_TIMEOUT_SECS` (20s) makes that
 decision. This zero-blob-first-status design is owned by
-[`fsmonitor.md`](./fsmonitor.md); the token form, full-invalidation rules, and the
+[`fsmonitor.md`](/git-lazy-mount/fsmonitor.md); the token form, full-invalidation rules, and the
 durable change journal (`crates/worktree/src/journal.rs`) live there.
 
 `ls -l` / `stat` of an unmaterialized path is separate: it faults that path's blob

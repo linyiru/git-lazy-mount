@@ -2,7 +2,7 @@
 
 What constrains `git-lazy-mount` today: costs that are fundamental to lazy-blob
 fetching, behaviors that are by-design, and capabilities that are not supported. For
-what works per command, see [`compatibility.md`](compatibility.md).
+what works per command, see [`compatibility.md`](/git-lazy-mount/compatibility.md).
 
 ## Fundamental costs of lazy fetching
 
@@ -12,7 +12,7 @@ what works per command, see [`compatibility.md`](compatibility.md).
   faults its blob once. This is inherent to any lazy-blob filter (including the
   default `tree:0`) and is not closeable without a server-side size manifest.
   `git status` / `git diff` do **not** pay this cost — the seeded FSMonitor
-  extension lets Git skip the stat entirely (see [`fsmonitor.md`](fsmonitor.md)).
+  extension lets Git skip the stat entirely (see [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md)).
 
 - **Branch-changing commands are eager.** `switch`, `checkout`, `reset --hard`,
   `merge`, and `rebase` write every changed path through the FUSE write path,
@@ -46,4 +46,4 @@ what works per command, see [`compatibility.md`](compatibility.md).
 ## Platform
 
 Linux only. Windows (ProjFS) and macOS (FSKit) are out of scope; the design notes
-are kept under [`future-platforms/`](future-platforms/).
+are kept under [`future-platforms/`](https://github.com/linyiru/git-lazy-mount/tree/138cebb4b0555ce1ebec906335fd900a4147c29a/docs/future-platforms).

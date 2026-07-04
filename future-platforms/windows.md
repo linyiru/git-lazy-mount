@@ -6,7 +6,7 @@
 > the tree. This note records why ProjFS would have been a distinct architecture
 > and what a hypothetical future Windows backend would have to solve, so the
 > analysis is not lost. Nothing here is built. For why future platforms are out
-> of scope, see [limitations.md](../limitations.md).
+> of scope, see [limitations.md](/git-lazy-mount/limitations.md).
 
 ## Why ProjFS would be a separate architecture
 
@@ -42,7 +42,7 @@ content.
 When a placeholder is created during directory enumeration, ProjFS requires the
 file size up front, before any content is hydrated. The provider would have to
 supply the exact projected size at enumeration time — the Windows analogue of
-the engine's exact-size stat policy (see [object-fetching.md](../object-fetching.md)),
+the engine's exact-size stat policy (see [object-fetching.md](/git-lazy-mount/object-fetching.md)),
 and it would have to account for filter-dependent size (CRLF).
 
 ### Async hydration and callback cancellation
@@ -67,7 +67,7 @@ A backend would have to:
   to repair drift from notifications lost across a crash or restart.
 
 This is conceptually similar to the Linux change journal (see
-[fsmonitor.md](../fsmonitor.md)), but it would be a distinct, Windows-specific
+[fsmonitor.md](/git-lazy-mount/fsmonitor.md)), but it would be a distinct, Windows-specific
 journal because the ordering hazard is ProjFS-specific.
 
 ### Offline modification
@@ -112,7 +112,7 @@ Git for Windows ships `core.autocrlf=true` in its system config by default. The
 shipped engine performs faithful filtering: it applies Git's own working-tree
 (smudge) filters via `cat-file --filters` with the correct `--attr-source` (the
 workspace base commit), in
-[`GitStore::smudge_blob`](../../crates/git-store/src/store.rs). On a host
+[`GitStore::smudge_blob`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-store/src/store.rs). On a host
 configured like Git for Windows, faithful filtering would produce CRLF line
 endings for affected files, exactly as a real `git checkout` would.
 
@@ -126,8 +126,8 @@ The Linux tests pin this deterministically so behavior is reproducible on any
 host: the integration tests set `core.autocrlf=false` on the test store
 (`crates/git-store/tests/store_integration.rs:21`) so faithful filtering does
 not inject host-dependent CRLF. The faithful-smudge mechanism and the
-`--attr-source` rationale are owned by [object-fetching.md](../object-fetching.md)
-and [worktree-model.md](../worktree-model.md).
+`--attr-source` rationale are owned by [object-fetching.md](/git-lazy-mount/object-fetching.md)
+and [worktree-model.md](/git-lazy-mount/worktree-model.md).
 
 ## Data root
 

@@ -13,9 +13,9 @@ no wrapper, alias, environment activation, or `git lazy-mount` workflow verb.
 Files materialize (hydrate) on read or edit.
 
 This is the authoritative specification. It is written to match the shipped code;
-where it summarizes a subsystem, the linked area document under [`docs/`](.) owns
+where it summarizes a subsystem, the linked area document under [`docs/`](/git-lazy-mount/.md) owns
 the implementation detail. macOS (FSKit) and Windows (ProjFS) backends are out of
-scope; notes on them live under [`future-platforms/`](future-platforms/).
+scope; notes on them live under [`future-platforms/`](https://github.com/linyiru/git-lazy-mount/tree/138cebb4b0555ce1ebec906335fd900a4147c29a/docs/future-platforms).
 
 The design is deliberately clean: there is no custom stage, no custom
 branch/commit state, no commit-adoption bridge, and no headless-first
@@ -130,7 +130,7 @@ eager`. A command is not "fully supported at scale" merely because it produces t
 right result after fetching every changed blob. For example, unmodified Git may
 materialize every path changed by a branch switch — measure that behavior rather
 than hiding it. The per-command matrix lives in
-[`compatibility.md`](compatibility.md).
+[`compatibility.md`](/git-lazy-mount/compatibility.md).
 
 ---
 
@@ -210,7 +210,7 @@ on another OS is not platform support. The shipped system is Linux / FUSE only.
 The projection's parsed views of Git state are disposable caches, rebuilt from the
 real gitdir. We never mirror Git state into a second authoritative model, never
 import commits after Git exits, and never keep a second stage or branch database.
-See [`git-state-model.md`](git-state-model.md).
+See [`git-state-model.md`](/git-lazy-mount/git-state-model.md).
 
 ## 5.2 Working-tree model: baseline + overlay
 
@@ -236,7 +236,7 @@ The baseline tree is **fixed at projection open** from the HEAD tree and is
 immutable for that projection's life; there is no baseline-advancement machinery.
 Branch-changing commands stay correct because stock Git writes every changed path
 through the FUSE write path into the overlay (see
-[worktree-model.md](worktree-model.md) and the eagerness note in
+[worktree-model.md](/git-lazy-mount/worktree-model.md) and the eagerness note in
 [§7](#7-required-plain-git-compatibility-surface)).
 
 ## 5.3 Crates
@@ -287,9 +287,9 @@ a reserved inode. A repo tree entry literally named `.git` never shadows the
 synthetic one.
 
 Storage durability (atomic sidecars + fsync, content retention via Linux fd
-survival) is owned by [`durability-security.md`](durability-security.md); the
+survival) is owned by [`durability-security.md`](/git-lazy-mount/durability-security.md); the
 overlay/baseline/tombstone model is owned by
-[`worktree-model.md`](worktree-model.md).
+[`worktree-model.md`](/git-lazy-mount/worktree-model.md).
 
 ## 5.5 Command surface
 
@@ -338,7 +338,7 @@ journal file directly — there is no socket and no protocol version to negotiat
    run the health checks and print success.
 
 The startup ordering and its deadlock-avoidance constraints are owned by
-[`deadlock-startup-recovery.md`](deadlock-startup-recovery.md).
+[`deadlock-startup-recovery.md`](/git-lazy-mount/deadlock-startup-recovery.md).
 
 ## 5.7 The `tree:0` default and its rationale
 
@@ -372,7 +372,7 @@ depth.
 
 ## 6.1 Worktree model
 
-*Area doc: [`worktree-model.md`](worktree-model.md).*
+*Area doc: [`worktree-model.md`](/git-lazy-mount/worktree-model.md).*
 
 The `Projection` layers the durable overlay over the fixed baseline HEAD tree.
 `resolve()` follows the order in [§5.2](#52-working-tree-model-baseline--overlay).
@@ -387,7 +387,7 @@ characters round-trip correctly.
 
 ## 6.2 FUSE semantics
 
-*Area doc: [`fuse-semantics.md`](fuse-semantics.md).*
+*Area doc: [`fuse-semantics.md`](/git-lazy-mount/fuse-semantics.md).*
 
 `TransparentFs` implements these `fuser` operations: `init` (which negotiates
 `FUSE_ATOMIC_O_TRUNC`), `lookup`, `forget`, `getattr`, `setattr`, `readlink`,
@@ -411,7 +411,7 @@ machinery.
 
 ## 6.3 Object fetching
 
-*Area doc: [`object-fetching.md`](object-fetching.md).*
+*Area doc: [`object-fetching.md`](/git-lazy-mount/object-fetching.md).*
 
 `materialize_path` streams a baseline blob through `cat-file` into a
 content-addressed cache file and serves range reads from its FD via a
@@ -431,7 +431,7 @@ which faults zero blobs (next section).
 
 ## 6.4 FSMonitor v2 + change journal
 
-*Area doc: [`fsmonitor.md`](fsmonitor.md).*
+*Area doc: [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).*
 
 Git's FSMonitor v2 hook receives `(version, previous_token)` and returns a new
 token, a NUL, then the relative paths changed since that token. Responses are
@@ -464,7 +464,7 @@ Verified zero-fault on an 81k-file real mount.
 
 ## 6.5 Git state model
 
-*Area doc: [`git-state-model.md`](git-state-model.md).*
+*Area doc: [`git-state-model.md`](/git-lazy-mount/git-state-model.md).*
 
 The transparent design — `git clone --separate-git-dir` + `core.worktree` + a
 synthetic `.git` gitfile served by the projection — gives stock Git an ordinary
@@ -476,7 +476,7 @@ would. We never infer a working-tree update from a changed index.
 
 ## 6.6 Index strategy
 
-*Area doc: [`index-strategy.md`](index-strategy.md).*
+*Area doc: [`index-strategy.md`](/git-lazy-mount/index-strategy.md).*
 
 The mount uses a **full real index** built by `git read-tree HEAD` (faulting HEAD
 trees, fetching zero blobs) — the maximum-compatibility correctness baseline.
@@ -489,7 +489,7 @@ full index.
 
 ## 6.7 Durability and security
 
-*Area doc: [`durability-security.md`](durability-security.md).*
+*Area doc: [`durability-security.md`](/git-lazy-mount/durability-security.md).*
 
 Overlay durability is per-entry: one atomic JSON sidecar per entry
 (`id_for(path) = sha256(path)+".json"`) under `meta/`, content bytes in native
@@ -505,7 +505,7 @@ are escaped safely for display and JSON.
 
 ## 6.8 Deadlock, startup, and recovery
 
-*Area doc: [`deadlock-startup-recovery.md`](deadlock-startup-recovery.md).*
+*Area doc: [`deadlock-startup-recovery.md`](/git-lazy-mount/deadlock-startup-recovery.md).*
 
 Git processes run *inside* the mount and can trigger FUSE callbacks; callbacks need
 Git objects. The invariants that prevent deadlock:
@@ -528,7 +528,7 @@ during a fork/exec.
 Do not claim transparent Git compatibility until these commands pass mounted
 end-to-end tests through a real `/dev/fuse` mount without a wrapper. The full
 per-command correctness-and-laziness matrix is in
-[`compatibility.md`](compatibility.md).
+[`compatibility.md`](/git-lazy-mount/compatibility.md).
 
 ```text
 discovery/inspection : rev-parse --show-toplevel, status [--porcelain=v2],
@@ -581,7 +581,7 @@ These are automated assertions, not aspirations.
 # 9. Limitations
 
 By-design and deferred behaviors are registered in
-[`limitations.md`](limitations.md). The load-bearing ones:
+[`limitations.md`](/git-lazy-mount/limitations.md). The load-bearing ones:
 
 - **`getattr` size hydration is fundamental to lazy blobs.** The exact size of an
   unmaterialized file requires its blob, so `ls -l` / `stat` faults it once. Not
@@ -605,7 +605,7 @@ builds operate directly on the virtual working tree with no wrapper.
 
 Not supported yet: end-to-end LFS, full nested submodules, and a shared object
 cache across workspaces. Other platforms (macOS/Windows) are out of scope; see
-[`future-platforms/`](future-platforms/).
+[`future-platforms/`](https://github.com/linyiru/git-lazy-mount/tree/138cebb4b0555ce1ebec906335fd900a4147c29a/docs/future-platforms).
 
 Build: `cargo build --release -p glm-cli --features fuse` produces
 `git-lazy-mount`; the `git-lazy-mount-fsmonitor` hook is built alongside and must

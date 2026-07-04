@@ -1,10 +1,10 @@
 # Overlay durability, auth/offline, security
 
-This area of the [specification](design.md) covers how the writable overlay
+This area of the [specification](/git-lazy-mount/design.md) covers how the writable overlay
 reaches the disk durably, how authentication and offline behaviour are gated so
 a filesystem callback never prompts, and the security model for treating
 repository data as untrusted. Read alongside
-[`architecture.md`](architecture.md) (baseline + overlay model,
+[`architecture.md`](/git-lazy-mount/architecture.md) (baseline + overlay model,
 two-sources-of-truth).
 
 Scope. This document owns only the *working-tree bytes* the mount writes. Git's
@@ -12,15 +12,15 @@ gitdir owns refs, index, reflogs, and commits; we never duplicate or journal
 them here. Related depth lives in its canonical owners:
 
 - baseline/overlay/tombstone/`BaseRef` model and rename semantics:
-  [`worktree-model.md`](worktree-model.md)
+  [`worktree-model.md`](/git-lazy-mount/worktree-model.md)
 - `materialize_path`, single-flight, `smudge_blob`, exact size/metadata:
-  [`object-fetching.md`](object-fetching.md)
+  [`object-fetching.md`](/git-lazy-mount/object-fetching.md)
 - the FSMonitor seed, change journal, and zero-blob first status:
-  [`fsmonitor.md`](fsmonitor.md)
+  [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md)
 - startup sequence and FUSE/git deadlock-avoidance:
-  [`deadlock-startup-recovery.md`](deadlock-startup-recovery.md)
+  [`deadlock-startup-recovery.md`](/git-lazy-mount/deadlock-startup-recovery.md)
 - the per-path `Durability`/`Residency` state axes:
-  [`git-state-model.md`](git-state-model.md)
+  [`git-state-model.md`](/git-lazy-mount/git-state-model.md)
 
 ---
 
@@ -77,7 +77,7 @@ projection records a `BaseRef { oid, mode }` at the destination (the existing
 baseline blob, by OID) and a tombstone at the source — no content is fetched or
 copied. The detailed rename rules (RENAME_NOREPLACE honoured, RENAME_EXCHANGE
 rejected, directory/subtree rename metadata-only) live in
-[`worktree-model.md`](worktree-model.md).
+[`worktree-model.md`](/git-lazy-mount/worktree-model.md).
 
 ### 1.2 Write protocol and durability ordering
 
@@ -118,7 +118,7 @@ The projection optionally carries a `ChangeJournal`
 `record()` is synchronous (`write_all` + `sync_data`) *before* the FUSE reply, so
 a recorded change is on disk before the mutation is acknowledged. This journal
 feeds FSMonitor continuity, not a second history; its token form and
-full-invalidation rules are owned by [`fsmonitor.md`](fsmonitor.md).
+full-invalidation rules are owned by [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).
 
 Known hardening gap: the journal has **no compaction** — `State.paths` is kept
 whole, so the log and its in-memory replay grow unbounded over the life of a
@@ -139,7 +139,7 @@ until unmount. The only CLI verbs are the default mount form, `Unmount`,
 Single-writer discipline is in-process: one `__serve` child holds the mount and
 is the only overlay writer. Startup and its
 deadlock-avoidance invariants are documented in
-[`deadlock-startup-recovery.md`](deadlock-startup-recovery.md).
+[`deadlock-startup-recovery.md`](/git-lazy-mount/deadlock-startup-recovery.md).
 
 ---
 
@@ -171,7 +171,7 @@ pub fn may_fetch(&self) -> bool { matches!(self, AllowNetwork | Prefetch) }
 additionally asserts the path never initiates I/O. On read paths `git-store`
 serves objects with `GIT_NO_LAZY_FETCH` set (`crates/git-store/src/store.rs`);
 hydration that *is* allowed to fetch goes through `materialize_path` (see
-[`object-fetching.md`](object-fetching.md)).
+[`object-fetching.md`](/git-lazy-mount/object-fetching.md)).
 
 | Caller | Policy | May prompt? | May hit network? |
 |--------|--------|-------------|------------------|
@@ -231,7 +231,7 @@ every entry on the first status. Paths under a checkout conversion
 the seed is **skipped wholesale** if any tracked `.gitattributes` declares such
 an attribute, so git checks those paths normally. The seed, its token identity
 requirement, and the conversion carve-out are owned by
-[`fsmonitor.md`](fsmonitor.md).
+[`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).
 
 ---
 

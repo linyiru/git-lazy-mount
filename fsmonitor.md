@@ -2,7 +2,7 @@
 
 This doc is the canonical reference for how git-lazy-mount answers Git's
 FSMonitor v2 queries and for the **zero-blob first `git status`** seed. It is
-part of the [specification](design.md).
+part of the [specification](/git-lazy-mount/design.md).
 
 The shape is small. Stock `git`, invoked directly inside the mount, calls our
 hook binary; the hook opens a durable append-log journal the serve process
@@ -12,10 +12,10 @@ socket, no SQLite** — just one hook binary and one log file.
 Two pieces implement it:
 
 - the hook binary
-  [`crates/cli/src/bin/fsmonitor_hook.rs`](../crates/cli/src/bin/fsmonitor_hook.rs)
+  [`crates/cli/src/bin/fsmonitor_hook.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/bin/fsmonitor_hook.rs)
   (installed as `git-lazy-mount-fsmonitor`), wired to `core.fsmonitor`; and
 - the token + journal types in
-  [`crates/worktree/src/journal.rs`](../crates/worktree/src/journal.rs).
+  [`crates/worktree/src/journal.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs).
 
 ## Where this fits
 
@@ -32,7 +32,7 @@ the log the serve process already fsynced. The log file is the only channel.
 ### Config written at mount
 
 `configure_fsmonitor`
-([`crates/cli/src/main.rs`](../crates/cli/src/main.rs)) sets the FSMonitor hook
+([`crates/cli/src/main.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/main.rs)) sets the FSMonitor hook
 and enables Git's untracked cache via plain `git config`:
 
 ```
@@ -70,7 +70,7 @@ use. Any `argv[1]` other than `"2"` gets a full invalidation.
 - After it, zero or more **NUL-separated, repo-root-relative** paths.
 - Paths use `/`; bytes are emitted verbatim, never lossy-UTF-8. The journal
   stores raw path bytes
-  ([`crates/core/src/path.rs`](../crates/core/src/path.rs)) and writes them
+  ([`crates/core/src/path.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/core/src/path.rs)) and writes them
   straight to stdout.
 - The set is **inclusive**: it must contain every path that *might* have changed
   since `prev token`. False positives are acceptable; false negatives are never
@@ -78,7 +78,7 @@ use. Any `argv[1]` other than `"2"` gets a full invalidation.
   extra `lstat`. A missing path corrupts `git status`.
 
 `Query::encode`
-([`crates/worktree/src/journal.rs`](../crates/worktree/src/journal.rs))
+([`crates/worktree/src/journal.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs))
 serializes both the change-set reply and the full-invalidation sentinel.
 
 ### 1.1 Full-invalidation sentinel
@@ -102,7 +102,7 @@ garbage on stdout paired with a nonzero status.
 ## 2. Token identity
 
 A token is opaque **to Git** but **structured for the journal**. The wire form
-([`Token::encode`/`Token::parse`](../crates/worktree/src/journal.rs)) is:
+([`Token::encode`/`Token::parse`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs)) is:
 
 ```
 glm1:<workspace>:<epoch>:<seq>:<generation>
@@ -133,7 +133,7 @@ mount; `epoch` and `generation` are fixed at `1` and `0`.
 ## 3. The query algorithm
 
 `ChangeJournal::query(prev)`
-([`crates/worktree/src/journal.rs`](../crates/worktree/src/journal.rs)) is the
+([`crates/worktree/src/journal.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs)) is the
 whole server side. It holds no locks across I/O and does no `git` call. With
 `cur_seq` = the number of records replayed from the log:
 
@@ -158,7 +158,7 @@ exercised by `full_invalidation_on_unplaceable_tokens` and
 The serve process records a path on every worktree-mutating FUSE op (create,
 write, truncate, unlink, mkdir, rmdir, symlink, and both endpoints of a rename),
 via `Projection::record_change`
-([`crates/worktree/src/lib.rs`](../crates/worktree/src/lib.rs)). For a path
+([`crates/worktree/src/lib.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/lib.rs)). For a path
 whose parent directory's listing changes, the parent is recorded too, so Git's
 directory-level checks see it. Recording is **synchronous** (`record` does
 `write_all` + `sync_data`) and happens **before** the FUSE reply — and before the
@@ -169,7 +169,7 @@ required to be inclusive.
 
 Branch-changing commands (`switch`/`checkout`/`reset --hard`/`merge`/`rebase`)
 flow through this same FUSE write path: stock git writes each changed path, so
-each is recorded. See [compatibility.md](compatibility.md) for the
+each is recorded. See [compatibility.md](/git-lazy-mount/compatibility.md) for the
 per-command laziness matrix.
 
 The log is replayed into an in-memory `Vec` and **kept whole** — there is no
@@ -191,7 +191,7 @@ the extension. The hook's "nothing changed" reply cannot help, because the valid
 bits were never set going in. It is a **bootstrap-ordering** problem.
 
 The mount **pre-seeds** the extension at mount, right after `read-tree`
-([`AdminRepo::seed_fsmonitor_valid`](../crates/git-repo/src/lib.rs)): pipe every
+([`AdminRepo::seed_fsmonitor_valid`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-repo/src/lib.rs)): pipe every
 tracked path through `git update-index -z --fsmonitor-valid --stdin`, which sets
 each entry's `CE_FSMONITOR_VALID` bit and records the hook's current (seq-0)
 token. The seed runs only after the empty journal exists, so the hook can answer
@@ -213,7 +213,7 @@ returns `/`: the hook cannot prove continuity from a token it did not issue.
 
 Verified zero-fault on a small repo by
 `first_status_faults_zero_blobs_and_surfaces_edits`
-([`crates/cli/tests/fsmonitor.rs`](../crates/cli/tests/fsmonitor.rs)). The
+([`crates/cli/tests/fsmonitor.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/tests/fsmonitor.rs)). The
 ~81k-file figure is a separate manual measurement on the
 microsoft/TypeScript mount (README performance table), not from this test.
 
@@ -223,7 +223,7 @@ A path under a checkout-conversion attribute — a clean/smudge `filter=`,
 `ident`, `working-tree-encoding=`, or CRLF `eol=crlf` — reads through the mount
 as the raw baseline blob, which can differ from a real checkout, so seeding it
 valid could hide a real diff (see the smudge-side raw-baseline limitation in
-[limitations.md](limitations.md)).
+[limitations.md](/git-lazy-mount/limitations.md)).
 
 The carve-out is **all-or-nothing, not per-path**: if any tracked
 `.gitattributes` declares any such attribute (`declares_conversion_attributes`
@@ -233,7 +233,7 @@ seed** and the first status falls back to the eager scan — which is correct, j
 not optimized. The common case (no conversion attribute) seeds every entry.
 
 `ls -l`/`stat` of an unmaterialized file still faults its blob once for the exact
-size — the `getattr` size-fault cost ([limitations.md](limitations.md)), separate
+size — the `getattr` size-fault cost ([limitations.md](/git-lazy-mount/limitations.md)), separate
 from `git status`, which does not stat seeded entries.
 
 ---
@@ -247,7 +247,7 @@ journal there, and answers. No `git status`, no filters, no hydration — the qu
 path cannot fault a blob or run a smudge filter. The synthetic `.git` gitfile
 holds the exact admin-dir path the CLI wrote, the same one the serve process
 uses, so the workspace id and journal path always agree across calls. See
-[deadlock-startup-recovery.md](deadlock-startup-recovery.md) for why the
+[deadlock-startup-recovery.md](/git-lazy-mount/deadlock-startup-recovery.md) for why the
 FSMonitor query path must stay off the worktree.
 
 ---
@@ -255,14 +255,14 @@ FSMonitor query path must stay off the worktree.
 ## Related
 
 - Token + journal types and tests:
-  [`crates/worktree/src/journal.rs`](../crates/worktree/src/journal.rs).
+  [`crates/worktree/src/journal.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs).
 - The hook binary:
-  [`crates/cli/src/bin/fsmonitor_hook.rs`](../crates/cli/src/bin/fsmonitor_hook.rs).
+  [`crates/cli/src/bin/fsmonitor_hook.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/bin/fsmonitor_hook.rs).
 - Overlay durability and the atomic-sidecar fsync discipline (a sibling of the
-  journal's synchronous-record rule): [durability-security.md](durability-security.md).
+  journal's synchronous-record rule): [durability-security.md](/git-lazy-mount/durability-security.md).
 - The `read-tree HEAD` index build the seed runs against, and the throwaway
   operational-index interop bridge
-  ([`crates/git-store/src/interop.rs`](../crates/git-store/src/interop.rs),
+  ([`crates/git-store/src/interop.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-store/src/interop.rs),
   exercised by `store_integration.rs`):
-  [index-strategy.md](index-strategy.md).
-- Per-command compatibility and laziness: [compatibility.md](compatibility.md).
+  [index-strategy.md](/git-lazy-mount/index-strategy.md).
+- Per-command compatibility and laziness: [compatibility.md](/git-lazy-mount/compatibility.md).

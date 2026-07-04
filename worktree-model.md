@@ -4,9 +4,9 @@ This document describes how `git-lazy-mount` computes the bytes of the virtual
 working tree: the rules for unmaterialized vs. locally-written content, rename
 semantics, symlinks / hard links / special files, the protected synthetic
 `.git`, and raw repository paths. It is the canonical home for the projection
-model; the FUSE op set lives in [fuse-semantics.md](fuse-semantics.md), object
-fetching in [object-fetching.md](object-fetching.md), and the durable change log
-in [fsmonitor.md](fsmonitor.md). The overall spec is [design.md](design.md).
+model; the FUSE op set lives in [fuse-semantics.md](/git-lazy-mount/fuse-semantics.md), object
+fetching in [object-fetching.md](/git-lazy-mount/object-fetching.md), and the durable change log
+in [fsmonitor.md](/git-lazy-mount/fsmonitor.md). The overall spec is [design.md](/git-lazy-mount/design.md).
 
 This document covers what bytes a path *contains*. It does **not** specify
 staging, commit, refs, or status — those are Git's, served from the real
@@ -71,7 +71,7 @@ The three sources:
    directories, **base-refs** (a clean rename pointing at an existing blob with
    no bytes copied), and **tombstones** (deletions). Each entry is one atomic
    JSON sidecar plus, for files, a native content file. See
-   [durability-security.md](durability-security.md) for the persistence format.
+   [durability-security.md](/git-lazy-mount/durability-security.md) for the persistence format.
 3. **Baseline**: the committed Git **tree** that an unmaterialized path reads
    from. Lazy — nothing is fetched merely to hold a baseline.
 
@@ -106,7 +106,7 @@ Notes:
   `tree:0` partial clone (`crates/git-repo/src/lib.rs:50`), which `build_index`
   faults at mount via `read-tree HEAD`. (`tree:0` keeps the baseline cheap: it
   faults trees on demand rather than downloading every tree from all of history.
-  See [index-strategy.md](index-strategy.md).)
+  See [index-strategy.md](/git-lazy-mount/index-strategy.md).)
 - **Implied / overlay directories**: a created `a/b/c` makes `a/b` a directory
   because `mkdir`/`create` records the parent overlay `Dir` entries; resolution
   and `readdir` then merge them with the baseline.
@@ -117,7 +117,7 @@ subtracting and overlay files/base-refs adding. It is **O(direct children)**,
 returns names + kind + inode only — **never** sizes or blob reads — and at the
 root suppresses the baseline `.git` in favor of the synthetic one. (`ls -l`
 faults a blob per file for its exact size; that is `getattr`, not `readdir` —
-see [object-fetching.md](object-fetching.md).)
+see [object-fetching.md](/git-lazy-mount/object-fetching.md).)
 
 ---
 
@@ -145,7 +145,7 @@ two move independently and correctly.
 
 The third pillar of the crate is the `ChangeJournal`
 (`crates/worktree/src/journal.rs`), the durable record that lets stock `git
-status` stay fast. It is canonically documented in [fsmonitor.md](fsmonitor.md);
+status` stay fast. It is canonically documented in [fsmonitor.md](/git-lazy-mount/fsmonitor.md);
 the projection's responsibility is to **record every mutation before
 acknowledging it**.
 
@@ -191,8 +191,8 @@ baseline blob** directly — no plumbing path argument needed, correct and
 byte-exact. A smudge-filtered file (eol=crlf, ident, an LFS pointer) therefore
 reads as its stored bytes, not the smudged bytes; commits stay byte-correct
 because the clean filter is the inverse. This is by design and is what lets
-non-UTF-8 paths read unfiltered. See [object-fetching.md](object-fetching.md)
-and [limitations.md](limitations.md).
+non-UTF-8 paths read unfiltered. See [object-fetching.md](/git-lazy-mount/object-fetching.md)
+and [limitations.md](/git-lazy-mount/limitations.md).
 
 Test `pathological_names_roundtrip` (`lib.rs:1505`) exercises a path with
 invalid UTF-8, a newline, a tab, a leading dash, a backslash, and quotes —
@@ -283,7 +283,7 @@ Neither `link` nor `mknod` is implemented in the FUSE layer
 (`crates/fuse/src/mount.rs`), so the fuser default applies and both return
 **`ENOSYS`**. Git preserves neither hard-link identity nor device/fifo/socket
 nodes (no such `GitMode`), so refusing them keeps everything the projection
-serves representable as Git content. See [limitations.md](limitations.md).
+serves representable as Git content. See [limitations.md](/git-lazy-mount/limitations.md).
 
 ---
 

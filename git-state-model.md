@@ -1,7 +1,7 @@
 # Git state model: what Git owns, what the mount caches
 
-This is part of the broader [specification](design.md). Overview:
-[`architecture.md`](./architecture.md). This doc explains the **ownership
+This is part of the broader [specification](/git-lazy-mount/design.md). Overview:
+[`architecture.md`](/git-lazy-mount/architecture.md). This doc explains the **ownership
 boundary** between stock Git and the mount, and why the transparent
 design needs no daemon-side copy of Git state to honor it.
 
@@ -36,7 +36,7 @@ The mount realizes INV-OWNERSHIP not by mirroring Git state into caches, but
 by *removing the need to*. Stock Git drives the real gitdir directly:
 
 - The clone is `git clone --no-checkout --separate-git-dir=<gitdir>`
-  ([`AdminRepo::clone`](../crates/git-repo/src/lib.rs)), so the gitdir is a
+  ([`AdminRepo::clone`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-repo/src/lib.rs)), so the gitdir is a
   normal **native** directory outside FUSE.
 - `core.worktree` is set to the mountpoint, and the FUSE projection serves a
   single synthetic `.git` *gitfile* at the mount root pointing back at that
@@ -64,14 +64,14 @@ staged / what is HEAD / what branch" — those answers come only from Git. The
 overlay and baseline are themselves disposable: the overlay's in-memory index
 is rebuilt from atomic sidecars on open, and the journal replays from a durable
 append log. Their ownership semantics are detailed in
-[`worktree-model.md`](./worktree-model.md).
+[`worktree-model.md`](/git-lazy-mount/worktree-model.md).
 
 The one place the mount observes Git's index is the **FSMonitor seed**: right
 after `git read-tree HEAD` builds the index, the mount writes the index's
 `FSMN` extension so the first clean `git status` faults zero blobs (the same as
 every later clean status). This is a write *into Git's own index extension for
 Git's benefit*, not a daemon-side cache of index contents. It is the canonical
-subject of [`fsmonitor.md`](./fsmonitor.md); a zero-blob first status is
+subject of [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md); a zero-blob first status is
 achievable over the default `tree:0` clone. Paths under a checkout conversion
 (filter / `ident` / `working-tree-encoding` / CRLF `eol`) are excluded from the
 seed so Git checks them normally.
@@ -115,35 +115,35 @@ projection keeps no Git-state cache — no daemon-side index parser, no ref
 snapshot, no in-progress-operation model, and no gitdir watcher. The only Git
 hook configured is `core.fsmonitor` (with `core.fsmonitorHookVersion=2`),
 pointing at the `git-lazy-mount-fsmonitor` binary
-([`configure_fsmonitor`](../crates/cli/src/main.rs)).
+([`configure_fsmonitor`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/main.rs)).
 
 The change journal that backs that hook is the durable
-[`ChangeJournal`](../crates/worktree/src/journal.rs): the mount writes it
+[`ChangeJournal`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree/src/journal.rs): the mount writes it
 synchronously before each FUSE reply and the `git-lazy-mount-fsmonitor` hook
-reads it; see [`fsmonitor.md`](./fsmonitor.md).
+reads it; see [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md).
 
 ### The interop bridge
 
-[`crates/git-store/src/interop.rs`](../crates/git-store/src/interop.rs) stands
+[`crates/git-store/src/interop.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-store/src/interop.rs) stands
 up a throwaway operational gitdir, routes object I/O via
 `GIT_OBJECT_DIRECTORY`, synthesizes an index from a tree with every entry
 marked skip-worktree, and reads back the resulting head. It is **not** on the
 mount hot path, but the module is `pub`-exported (`InteropOutcome`) and
 exercised by the `interop_bridge_status_commit_and_lazy_fetch` integration test
-in [`store_integration.rs`](../crates/git-store/tests/store_integration.rs).
+in [`store_integration.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-store/tests/store_integration.rs).
 
 ### Shared object-store components
 
-[`GitStore`](../crates/git-store/src/store.rs) and its `BatchSession`
+[`GitStore`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/git-store/src/store.rs) and its `BatchSession`
 (long-lived `cat-file --batch-command`), the core types
-([`ObjectId`](../crates/core/src/object_id.rs),
-[`GitMode`](../crates/core/src/mode.rs),
-[`RepoPath`](../crates/core/src/path.rs)), and the `MergeStage`/`MergeConflict`
+([`ObjectId`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/core/src/object_id.rs),
+[`GitMode`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/core/src/mode.rs),
+[`RepoPath`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/core/src/path.rs)), and the `MergeStage`/`MergeConflict`
 shapes in `store.rs`.
 
 ---
 
-See [`index-strategy.md`](./index-strategy.md) for the real index build
+See [`index-strategy.md`](/git-lazy-mount/index-strategy.md) for the real index build
 (`read-tree HEAD`) and the interop bridge's synthesized index in detail, and
-[`worktree-model.md`](./worktree-model.md) for baseline/overlay/tombstone/rename
+[`worktree-model.md`](/git-lazy-mount/worktree-model.md) for baseline/overlay/tombstone/rename
 ownership.

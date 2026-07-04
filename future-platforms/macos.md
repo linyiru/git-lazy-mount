@@ -14,18 +14,18 @@ without usable FSKit, an isolated macFUSE backend could be offered as a separate
 explicitly chosen backend — never substituted silently by changing semantics.
 
 The shipped filesystem surface is `impl Filesystem for TransparentFs` in
-[`crates/fuse/src/mount.rs`](../../crates/fuse/src/mount.rs). It is FUSE-specific,
+[`crates/fuse/src/mount.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/fuse/src/mount.rs). It is FUSE-specific,
 not a cross-platform engine abstraction. A macOS port would need to bridge FSKit
 (or macFUSE) callbacks onto the same projection/overlay/journal that
 `TransparentFs` drives — the projection, overlay, and durable change journal all
-live in [`crates/worktree`](../../crates/worktree) and are backend-agnostic.
+live in [`crates/worktree`](https://github.com/linyiru/git-lazy-mount/tree/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/worktree) and are backend-agnostic.
 
 ## What a macOS port would need
 
 The notes below are **speculative design** — "would need to" / "was considered",
 not status. For the concrete build/sign/install/registration runbook and the
 exact OS-level blocker that stopped the prototype, see
-[`macos-fskit-ondevice.md`](macos-fskit-ondevice.md).
+[`macos-fskit-ondevice.md`](/git-lazy-mount/future-platforms/macos-fskit-ondevice.md).
 
 ### FSKit extension (or isolated macFUSE)
 
@@ -44,7 +44,7 @@ whether the system extension is installed and **approved**, and whether macFUSE 
 present, then select a backend or none. When no backend is available, `mount` and
 `git lazy-mount doctor` should emit concrete, ordered install/approval steps. (The
 shipped `doctor` reports only `mountpoint` / `mounted` / `show_toplevel` —
-[`crates/cli/src/main.rs`](../../crates/cli/src/main.rs) `cmd_doctor` — and has no
+[`crates/cli/src/main.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/main.rs) `cmd_doctor` — and has no
 FSKit fields.)
 
 ### APFS case-sensitivity and Unicode normalization
@@ -98,14 +98,14 @@ extension restart, mounts would recover by replaying the durable journal; the
 kernel re-issues `lookup`, so inode identity is rebuilt on demand and numbers are
 never reused. The shipped mount lifecycle is a detached hidden `__serve` child
 plus a monotonic `MountGeneration` counter
-([`crates/core/src/ids.rs`](../../crates/core/src/ids.rs)) — there is no daemon and
+([`crates/core/src/ids.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/core/src/ids.rs)) — there is no daemon and
 no daemon state machine.
 
 **This is where the prototype died.** Both Apple's official `Passthrough` FSKit
 sample and the prototype extension built, signed, installed, and registered, but
 neither could be **enabled** in System Settings on macOS 26.4.1 — an Apple OS-level
 bug. The full runbook and findings are in
-[`macos-fskit-ondevice.md`](macos-fskit-ondevice.md). Because the OS itself
+[`macos-fskit-ondevice.md`](/git-lazy-mount/future-platforms/macos-fskit-ondevice.md). Because the OS itself
 blocked enabling the extension, the macOS backend code was retired and the project
 is Linux-only.
 
@@ -114,5 +114,5 @@ is Linux-only.
 If revived, macOS state would live under the same XDG-style data directory the CLI
 already computes: `$XDG_DATA_HOME/git-lazy-mount`, else
 `$HOME/.local/share/git-lazy-mount` (`data_dir` in
-[`crates/cli/src/main.rs`](../../crates/cli/src/main.rs)). The earlier prototype's
+[`crates/cli/src/main.rs`](https://github.com/linyiru/git-lazy-mount/blob/138cebb4b0555ce1ebec906335fd900a4147c29a/crates/cli/src/main.rs)). The earlier prototype's
 `~/Library/Application Support` placement is not what the shipped CLI uses.

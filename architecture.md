@@ -3,7 +3,7 @@
 A tour of how `git-lazy-mount` turns a partial clone into a transparent working
 tree that stock `git`, your editor, and your build drive directly. This is the
 explanation-level overview; each area has a deep-dive doc, linked inline below.
-The full specification is [`design.md`](design.md).
+The full specification is [`design.md`](/git-lazy-mount/design.md).
 
 `git-lazy-mount` is Linux-only and built on FUSE.
 
@@ -28,7 +28,7 @@ The projection's parsed views of Git state are disposable caches, rebuilt from
 the real gitdir. We never mirror Git state into a second authoritative model,
 never import commits, and never keep a second stage or branch DB. The boundary
 itself — separate-git-dir plus `core.worktree` plus the synthetic `.git` — is
-specified in [`git-state-model.md`](git-state-model.md).
+specified in [`git-state-model.md`](/git-lazy-mount/git-state-model.md).
 
 ## Working-tree model: baseline + overlay
 
@@ -49,7 +49,7 @@ come from Git. The overlay (an `OverlayEntry` of `File` / `Symlink` / `Dir` /
 `Tombstone` / `BaseRef{oid,mode}`) holds every local divergence. Resolution,
 raw-byte paths, rename semantics (RENAME_NOREPLACE honored, RENAME_EXCHANGE
 rejected, subtree rename metadata-only), and the protected synthetic `.git` are
-owned by [`worktree-model.md`](worktree-model.md).
+owned by [`worktree-model.md`](/git-lazy-mount/worktree-model.md).
 
 ## On-disk layout
 
@@ -66,11 +66,11 @@ entry — `id_for(path) = sha256(path)+".json"` under `overlay/meta/`, written
 temp + fsync + rename — with content bytes in native files under
 `overlay/content/`. The in-memory overlay index is a disposable cache rebuilt
 from the sidecars on open. Durability details live in
-[`durability-security.md`](durability-security.md).
+[`durability-security.md`](/git-lazy-mount/durability-security.md).
 
 The change journal is **not** under `workspaces/`: it is a NUL-separated append
 log at `<gitdir>/glm-fsmonitor/changes.log`, replayed into an in-memory `Vec` on
-open (see [`fsmonitor.md`](fsmonitor.md)).
+open (see [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md)).
 
 The mounted worktree `~/huge-repo/` projects a synthetic read-only regular file
 `.git` whose bytes are `gitdir: /abs/.../workspaces/<id>/git`. The admin gitdir
@@ -108,13 +108,13 @@ and large on big repos), and `--depth 1` grafts the commits, breaking `git
 merge`/`git rebase` and hiding history. `blob:none` is still a valid explicit
 `--filter` override, just not the default. The startup ordering and its
 deadlock-avoidance constraints are owned by
-[`deadlock-startup-recovery.md`](deadlock-startup-recovery.md).
+[`deadlock-startup-recovery.md`](/git-lazy-mount/deadlock-startup-recovery.md).
 
 ## FUSE projection
 
 `TransparentFs` implements `fuser::Filesystem`. See
-[`fuse-semantics.md`](fuse-semantics.md) for the full op set and
-[`object-fetching.md`](object-fetching.md) for hydration.
+[`fuse-semantics.md`](/git-lazy-mount/fuse-semantics.md) for the full op set and
+[`object-fetching.md`](/git-lazy-mount/object-fetching.md) for hydration.
 
 - **Inodes/handles.** `ROOT_INO=1` is the only pre-allocated inode; each
   `InodeEntry` is just `{path, lookups, generation}`. Open handles are real
@@ -156,7 +156,7 @@ hook answers "nothing changed". The seed is **skipped wholesale** if any tracked
 `.gitattributes` declares a conversion attr (`filter=` / `ident` /
 `working-tree-encoding=` / CRLF `eol`), so converted paths are never hidden from
 a diff. The token form, full-invalidation rules, and the seed mechanics are
-owned by [`fsmonitor.md`](fsmonitor.md) — the canonical home for the seed.
+owned by [`fsmonitor.md`](/git-lazy-mount/fsmonitor.md) — the canonical home for the seed.
 
 ## Crates
 
@@ -182,7 +182,7 @@ crates/
 `git-store/src/interop.rs` synthesizes a throwaway operational index (every
 entry skip-worktree) so stock git can run against the shared store; it is off
 the mount hot path but still exercised by `store_integration.rs`. Index strategy
-detail is in [`index-strategy.md`](index-strategy.md).
+detail is in [`index-strategy.md`](/git-lazy-mount/index-strategy.md).
 
 ## Status
 
@@ -190,9 +190,9 @@ Linux-only, real-`/dev/fuse`-CI tested on `ubuntu-latest`. Not supported: a
 shared object cache across workspaces, full submodule support, and end-to-end
 LFS (bounded by the smudge-side raw-baseline behavior). Windows (ProjFS) and
 macOS (FSKit) backend notes live under
-[`future-platforms/`](future-platforms/).
+[`future-platforms/`](https://github.com/linyiru/git-lazy-mount/tree/138cebb4b0555ce1ebec906335fd900a4147c29a/docs/future-platforms).
 
 Per-command compatibility and the laziness matrix live in
-[`compatibility.md`](compatibility.md); the by-design / fundamental / deferred
+[`compatibility.md`](/git-lazy-mount/compatibility.md); the by-design / fundamental / deferred
 register (including the metadata-only subtree rename, `getattr` size hydration,
-and smudge-side raw-baseline reads) lives in [`limitations.md`](limitations.md).
+and smudge-side raw-baseline reads) lives in [`limitations.md`](/git-lazy-mount/limitations.md).
